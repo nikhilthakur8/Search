@@ -91,10 +91,7 @@ export async function GET(request: NextRequest) {
 
 		// Build search pipeline
 		const searchStage = getSearchStage(query);
-		const pipeline: PipelineStage[] = [
-			{ $search: searchStage },
-			{ $sort: { score: -1 } },
-		];
+		const pipeline: PipelineStage[] = [{ $search: searchStage }];
 		const countPipeline: PipelineStage[] = [...pipeline];
 
 		// Pagination
@@ -107,6 +104,7 @@ export async function GET(request: NextRequest) {
 				highlights: { $meta: "searchHighlights" },
 			},
 		});
+		pipeline.push({ $sort: { score: -1 } });
 
 		// Execute aggregation
 		const results = await User.aggregate(pipeline);

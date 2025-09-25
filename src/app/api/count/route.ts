@@ -10,10 +10,6 @@ export async function GET() {
 			{ count },
 			{
 				status: 200,
-				headers: {
-					"Cache-Control":
-						"public, s-maxage=86400, stale-while-revalidate=3600",
-				},
 			}
 		);
 	} catch (error: unknown) {

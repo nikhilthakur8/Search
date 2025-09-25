@@ -67,22 +67,6 @@ function Header() {
 			setLoading(false);
 		}
 	};
-	const [totalUsers, setTotalUsers] = useState<number | null>(null);
-
-	useEffect(() => {
-		// Fetch total user count on initial load
-		const fetchTotalUsers = async () => {
-			try {
-				const response = await axios.get("/api/count");
-				if (response.status === 200) {
-					setTotalUsers(response.data.count);
-				}
-			} catch (error) {
-				console.error("Failed to fetch total user count:", error);
-			}
-		};
-		fetchTotalUsers();
-	}, []);
 
 	const handleSearch = (e: React.FormEvent) => {
 		e.preventDefault();

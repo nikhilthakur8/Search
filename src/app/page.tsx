@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, User, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import {
 	Card,
 	CardContent,
@@ -13,8 +13,9 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
+import { toast } from "sonner";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 interface SearchResult {
 	_id: string;
@@ -27,49 +28,61 @@ export default function Home() {
 	const [query, setQuery] = useState("");
 	const [results, setResults] = useState<SearchResult[]>([]);
 	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState("");
+	const [page, setPage] = useState(1);
+	const [hasMore, setHasMore] = useState(true);
 	const [hasSearched, setHasSearched] = useState(false);
 
-	const handleSearch = async (e: React.FormEvent) => {
-		e.preventDefault();
-
-		if (!query.trim()) {
-			setError("Please enter a search query");
-			return;
-		}
+	const fetchUsers = async (reset = false) => {
+		if (!query.trim()) return;
 
 		setLoading(true);
-		setError("");
-		setHasSearched(true);
-
 		try {
 			const response = await axios.get(
-				`/api/search?q=${encodeURIComponent(query.trim())}`
+				`/api/search?q=${encodeURIComponent(
+					query.trim()
+				)}&page=${page}&limit=12`
 			);
-
-			// response.data.users is the array of users
-			const users: SearchResult[] = response.data.users;
 
 			if (response.status !== 200) {
-				throw new Error(
-					response.data.error ||
-						response.data.message ||
-						"Search failed"
-				);
+				throw new Error(response.data.error || "Search failed");
 			}
 
-			setResults(users); // set the array directly
-		} catch (err) {
-			setError(
-				err instanceof Error
-					? err.message
-					: "An error occurred while searching"
-			);
-			setResults([]);
+			const users: SearchResult[] = response.data.users;
+
+			setResults((prev) => (reset ? users : [...prev, ...users]));
+			setHasMore(response.data.pagination.hasMore);
+		} catch (err: unknown) {
+			let message = "An error occurred while searching";
+			if (err instanceof AxiosError) {
+				message = err.response?.data?.message || message;
+			} else if (err instanceof Error) {
+				message = err.message;
+			}
+			toast.error(message);
+			setHasMore(false);
 		} finally {
 			setLoading(false);
 		}
 	};
+
+	const handleSearch = (e: React.FormEvent) => {
+		e.preventDefault();
+		setPage(1);
+		setHasSearched(true);
+		setResults([]);
+		fetchUsers(true);
+	};
+
+	const fetchNextPage = () => {
+		setPage((prev) => prev + 1);
+	};
+
+	// Fetch data whenever page changes
+	useEffect(() => {
+		if (page > 1) fetchUsers();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [page]);
+
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
 			<div className="container mx-auto px-4 py-8">
@@ -127,105 +140,74 @@ export default function Home() {
 					</CardContent>
 				</Card>
 
-				{/* Error Alert */}
-				{error && (
-					<div className="max-w-2xl mx-auto mb-6">
-						<Alert variant="destructive">
-							<AlertDescription>{error}</AlertDescription>
-						</Alert>
-					</div>
-				)}
-
-				{/* Search Results Summary */}
-				{hasSearched && !loading && (
-					<div className="text-center mb-6">
-						<Badge variant="secondary" className="text-sm">
-							{results.length > 0
-								? `Found ${results.length} result${
-										results.length === 1 ? "" : "s"
-								  } for "${query}"`
-								: `No results found for "${query}"`}
-						</Badge>
-					</div>
-				)}
-
-				{/* Results Grid */}
+				{/* Results with Infinite Scroll */}
 				{results.length > 0 && (
-					<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-						{results.map((user) => (
-							<Card
-								key={user._id}
-								className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
-							>
-								<CardHeader className="pb-3">
-									<div className="flex items-start gap-3">
-										<div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary/20">
-											<User className="h-6 w-6 text-primary" />
+					<InfiniteScroll
+						dataLength={results.length}
+						next={fetchNextPage}
+						hasMore={hasMore}
+						loader={
+							<div className="text-center mt-6">
+								<Loader2 className="h-10 w-10 text-muted-foreground animate-spin mx-auto" />
+							</div>
+						}
+						endMessage={
+							<p className="text-center mt-6 text-muted-foreground">
+								No more results
+							</p>
+						}
+					>
+						<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+							{results.map((user) => (
+								<Card
+									key={user._id}
+									className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
+								>
+									<CardHeader className="pb-3">
+										<div className="flex items-start gap-3">
+											<div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary/20">
+												<User className="h-6 w-6 text-primary" />
+											</div>
+											<div className="flex-1 min-w-0">
+												{user.realName && (
+													<CardTitle className="text-lg leading-tight truncate">
+														{user.realName}
+													</CardTitle>
+												)}
+												<CardDescription className="truncate">
+													@{user.username}
+												</CardDescription>
+											</div>
 										</div>
-										<div className="flex-1 min-w-0">
-											{user.realName && (
-												<CardTitle className="text-lg leading-tight truncate">
-													{user.realName}
-												</CardTitle>
-											)}
-											<CardDescription className="truncate">
-												@{user.username}
-											</CardDescription>
+									</CardHeader>
+									<CardContent className="pt-0">
+										<div className="flex items-center justify-between">
+											<Badge
+												variant="outline"
+												className="text-xs"
+											>
+												ID: {user._id.substring(0, 8)}
+												...
+											</Badge>
+											<Link
+												href={`https://leetcode.com/${user.username}`}
+												target="_blank"
+												className="h-7 text-xs"
+											>
+												View Profile
+											</Link>
 										</div>
-									</div>
-								</CardHeader>
-								<CardContent className="pt-0">
-									<div className="flex items-center justify-between">
-										<Badge
-											variant="outline"
-											className="text-xs"
-										>
-											ID: {user._id.substring(0, 8)}...
-										</Badge>
-										<Link
-											href={`https://leetcode.com/${user.username}`}
-											type="button"
-											target="_blank"
-											className="h-7 text-xs"
-										>
-											View Profile
-										</Link>
-									</div>
-								</CardContent>
-							</Card>
-						))}
-					</div>
+									</CardContent>
+								</Card>
+							))}
+						</div>
+					</InfiniteScroll>
 				)}
 
-				{/* Empty State */}
-				{!hasSearched && (
-					<div className="text-center mt-12">
-						<div className="w-24 h-24 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
-							<Search className="h-12 w-12 text-muted-foreground" />
-						</div>
-						<h3 className="text-xl font-semibold mb-2">
-							Ready to Search
-						</h3>
-						<p className="text-muted-foreground max-w-md mx-auto">
-							Enter a search term above to find LeetCode users.
-							Our search supports both usernames and real names
-							with fuzzy matching.
-						</p>
-					</div>
-				)}
-
-				{/* Loading State */}
-				{loading && (
-					<div className="text-center mt-12">
-						<div className="w-24 h-24 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
-							<Loader2 className="h-12 w-12 text-muted-foreground animate-spin" />
-						</div>
-						<h3 className="text-xl font-semibold mb-2">
-							Searching...
-						</h3>
-						<p className="text-muted-foreground">
-							Finding users matching &ldquo;{query}&rdquo;
-						</p>
+				{/* No results */}
+				{hasSearched && results.length === 0 && !loading && (
+					<div className="text-center mt-12 text-muted-foreground">
+						No results found for &ldquo;{query}&rdquo;
 					</div>
 				)}
 			</div>

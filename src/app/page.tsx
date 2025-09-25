@@ -16,11 +16,13 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { toast } from "sonner";
 import InfiniteScroll from "react-infinite-scroll-component";
+import Image from "next/image";
 
 interface SearchResult {
 	_id: string;
 	username: string;
 	realName?: string;
+	userAvatar: string;
 	[key: string]: unknown;
 }
 
@@ -41,7 +43,7 @@ export default function Home() {
 			const response = await axios.get(
 				`/api/search?q=${encodeURIComponent(
 					query.trim()
-				)}&page=${page}&limit=50`
+				)}&page=${page}&limit=100`
 			);
 
 			if (response.status !== 200) {
@@ -171,8 +173,13 @@ export default function Home() {
 									>
 										<CardHeader className="pb-3">
 											<div className="flex items-start gap-3">
-												<div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary/20">
-													<User className="h-6 w-6 text-primary" />
+												<div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary/20 relative">
+													<Image
+														src={user.userAvatar!}
+														alt=""
+														fill
+														className="rounded-full"
+													/>
 												</div>
 												<div className="flex-1 min-w-0">
 													{user.realName && (

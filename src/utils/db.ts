@@ -1,12 +1,25 @@
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 
-let cached = (global as any).mongoose;
-
-if (!cached) {
-	cached = (global as any).mongoose = { conn: null, promise: null };
+interface MongooseCache {
+	conn: Mongoose | null;
+	promise: Promise<Mongoose> | null;
 }
 
-async function connectDB() {
+// Extend the NodeJS global type
+declare global {
+	var mongoose: MongooseCache | undefined;
+}
+
+const globalMongoose = global as typeof global & { mongoose?: MongooseCache };
+
+const cached: MongooseCache = globalMongoose.mongoose ?? {
+	conn: null,
+	promise: null,
+};
+
+globalMongoose.mongoose = cached;
+
+async function connectDB(): Promise<Mongoose> {
 	if (cached.conn) {
 		return cached.conn;
 	}
@@ -14,14 +27,13 @@ async function connectDB() {
 	if (!cached.promise) {
 		cached.promise = mongoose
 			.connect(process.env.MONGODB_URI!)
-			.then((mongoose) => {
-				return mongoose;
-			})
+			.then((mongooseInstance) => mongooseInstance)
 			.catch((error) => {
-				console.log("MongoDB connection error:", error);
+				console.error("MongoDB connection error:", error);
 				process.exit(1);
 			});
 	}
+
 	cached.conn = await cached.promise;
 	return cached.conn;
 }

@@ -23,17 +23,9 @@ interface SearchResult {
 	[key: string]: unknown;
 }
 
-interface SearchResponse {
-	results: SearchResult[];
-	query: string;
-	count: number;
-	message?: string;
-	error?: string;
-}
-
 export default function Home() {
 	const [query, setQuery] = useState("");
-	const [results, setResults] = useState([]);
+	const [results, setResults] = useState<SearchResult[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 	const [hasSearched, setHasSearched] = useState(false);
@@ -55,13 +47,18 @@ export default function Home() {
 				`/api/search?q=${encodeURIComponent(query.trim())}`
 			);
 
-			const data: SearchResponse = response.data.users;
-			console.log(data);
+			// response.data.users is the array of users
+			const users: SearchResult[] = response.data.users;
+
 			if (response.status !== 200) {
-				throw new Error(data.error || data.message || "Search failed");
+				throw new Error(
+					response.data.error ||
+						response.data.message ||
+						"Search failed"
+				);
 			}
 
-			setResults(data);
+			setResults(users); // set the array directly
 		} catch (err) {
 			setError(
 				err instanceof Error
@@ -73,7 +70,6 @@ export default function Home() {
 			setLoading(false);
 		}
 	};
-
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
 			<div className="container mx-auto px-4 py-8">

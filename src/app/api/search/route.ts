@@ -1,5 +1,6 @@
 import User from "@/models/leetcodeData";
 import connectDB from "@/utils/db";
+import { PipelineStage } from "mongoose";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -37,7 +38,7 @@ export async function GET(request: Request) {
 			},
 		];
 
-		const users = await User.aggregate(pipeline);
+		const users = await User.aggregate(pipeline as PipelineStage[]);
 		return NextResponse.json({ users }, { status: 200 });
 	} catch (error) {
 		console.error("Error fetching users:", error);

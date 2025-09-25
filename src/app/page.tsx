@@ -31,6 +31,7 @@ export default function Home() {
 	const [page, setPage] = useState(1);
 	const [hasMore, setHasMore] = useState(true);
 	const [hasSearched, setHasSearched] = useState(false);
+	const [responseTotal, setResponseTotal] = useState(0);
 
 	const fetchUsers = async (reset = false) => {
 		if (!query.trim()) return;
@@ -40,7 +41,7 @@ export default function Home() {
 			const response = await axios.get(
 				`/api/search?q=${encodeURIComponent(
 					query.trim()
-				)}&page=${page}&limit=12`
+				)}&page=${page}&limit=50`
 			);
 
 			if (response.status !== 200) {
@@ -51,6 +52,7 @@ export default function Home() {
 
 			setResults((prev) => (reset ? users : [...prev, ...users]));
 			setHasMore(response.data.pagination.hasMore);
+			setResponseTotal(response.data.pagination.total);
 		} catch (err: unknown) {
 			let message = "An error occurred while searching";
 			if (err instanceof AxiosError) {
@@ -142,66 +144,72 @@ export default function Home() {
 
 				{/* Results with Infinite Scroll */}
 				{results.length > 0 && (
-					<InfiniteScroll
-						dataLength={results.length}
-						next={fetchNextPage}
-						hasMore={hasMore}
-						loader={
-							<div className="text-center mt-6">
-								<Loader2 className="h-10 w-10 text-muted-foreground animate-spin mx-auto" />
+					<div className="max-w-6xl mx-auto">
+						<p className="text-muted-foreground mb-4 text-center">
+							Total Users Found: {` ${responseTotal}`}
+						</p>
+						<InfiniteScroll
+							dataLength={results.length}
+							next={fetchNextPage}
+							hasMore={hasMore}
+							loader={
+								<div className="text-center overflow-hidden mt-6">
+									<Loader2 className="h-10 w-10 text-muted-foreground animate-spin mx-auto" />
+								</div>
+							}
+							endMessage={
+								<p className="text-center mt-6 text-muted-foreground">
+									No more results
+								</p>
+							}
+						>
+							<div className="grid overflow-hidden gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+								{results.map((user, idx) => (
+									<Card
+										key={idx + 1}
+										className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
+									>
+										<CardHeader className="pb-3">
+											<div className="flex items-start gap-3">
+												<div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary/20">
+													<User className="h-6 w-6 text-primary" />
+												</div>
+												<div className="flex-1 min-w-0">
+													{user.realName && (
+														<CardTitle className="text-lg leading-tight truncate">
+															{user.realName}
+														</CardTitle>
+													)}
+													<CardDescription className="truncate">
+														@{user.username}
+													</CardDescription>
+												</div>
+											</div>
+										</CardHeader>
+										<CardContent className="pt-0">
+											<div className="flex items-center justify-between">
+												<Badge
+													variant="outline"
+													className="text-xs"
+												>
+													ID:{" "}
+													{user._id.substring(0, 8)}
+													...
+												</Badge>
+												<Link
+													href={`https://leetcode.com/${user.username}`}
+													target="_blank"
+													className="h-7 text-xs"
+												>
+													View Profile
+												</Link>
+											</div>
+										</CardContent>
+									</Card>
+								))}
 							</div>
-						}
-						endMessage={
-							<p className="text-center mt-6 text-muted-foreground">
-								No more results
-							</p>
-						}
-					>
-						<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-							{results.map((user) => (
-								<Card
-									key={user._id}
-									className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
-								>
-									<CardHeader className="pb-3">
-										<div className="flex items-start gap-3">
-											<div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary/20">
-												<User className="h-6 w-6 text-primary" />
-											</div>
-											<div className="flex-1 min-w-0">
-												{user.realName && (
-													<CardTitle className="text-lg leading-tight truncate">
-														{user.realName}
-													</CardTitle>
-												)}
-												<CardDescription className="truncate">
-													@{user.username}
-												</CardDescription>
-											</div>
-										</div>
-									</CardHeader>
-									<CardContent className="pt-0">
-										<div className="flex items-center justify-between">
-											<Badge
-												variant="outline"
-												className="text-xs"
-											>
-												ID: {user._id.substring(0, 8)}
-												...
-											</Badge>
-											<Link
-												href={`https://leetcode.com/${user.username}`}
-												target="_blank"
-												className="h-7 text-xs"
-											>
-												View Profile
-											</Link>
-										</div>
-									</CardContent>
-								</Card>
-							))}
-						</div>
-					</InfiniteScroll>
+						</InfiniteScroll>
+					</div>
 				)}
 
 				{/* No results */}

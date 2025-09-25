@@ -76,6 +76,7 @@ export async function GET(request: NextRequest) {
 	const query = searchParams.get("q") || "";
 	const page = parseInt(searchParams.get("page") || "1", 10);
 	const limit = parseInt(searchParams.get("limit") || "10", 10);
+	console.log({ limit });
 	const skip = (page - 1) * limit;
 
 	if (!query) {
@@ -125,6 +126,7 @@ export async function GET(request: NextRequest) {
 			{ status: 200 }
 		);
 	} catch (error: unknown) {
+		console.log(error);
 		return NextResponse.json(
 			{
 				error: "Internal Server Error",

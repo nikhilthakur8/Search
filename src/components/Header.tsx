@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Loader2, Search } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Github, Linkedin, Loader, Search, Twitter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios, { AxiosError } from "axios";
@@ -18,6 +18,11 @@ import { toast } from "sonner";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Image from "next/image";
 import { Loading } from "./Loading";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 interface SearchResult {
 	_id: string;
@@ -34,7 +39,7 @@ function Header() {
 	const [hasMore, setHasMore] = useState(true);
 	const [hasSearched, setHasSearched] = useState(false);
 	const [responseTotal, setResponseTotal] = useState(0);
-
+	const inputRef = useRef<HTMLInputElement>(null);
 	const fetchUsers = async (reset = false) => {
 		if (!query.trim()) return;
 
@@ -81,6 +86,18 @@ function Header() {
 		setPage((prev) => prev + 1);
 	};
 
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+				e.preventDefault();
+				inputRef.current?.focus();
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, []);
+
 	// Fetch data whenever page changes
 	useEffect(() => {
 		if (page > 1) fetchUsers();
@@ -103,20 +120,29 @@ function Header() {
 							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
 							<Input
 								value={query}
+								ref={inputRef}
 								onChange={(e) => setQuery(e.target.value)}
 								placeholder="Enter username or real name..."
-								className="pl-10"
+								className="pl-10 pr-12 placeholder:text-sm text-sm md:text-base md:placeholder:text-base"
 								disabled={loading}
 							/>
+							<div className="absolute right-2 top-1/2 -translate-y-1/2 flex space-x-1 text-xs text-muted-foreground">
+								<kbd className="rounded bg-muted px-1 py-0.5 font-mono text-[10px]">
+									⌘
+								</kbd>
+								<kbd className="rounded bg-muted px-1 py-0.5 font-mono text-[10px]">
+									K
+								</kbd>
+							</div>
 						</div>
 						<Button
 							type="submit"
 							disabled={loading || !query.trim()}
-							className="min-w-[100px]"
+							className="min-w-[100px] text-sm md:text-base"
 						>
 							{loading ? (
 								<>
-									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+									<Loader className="mr-2 h-4 w-4 animate-spin" />
 									Searching...
 								</>
 							) : (
@@ -156,15 +182,18 @@ function Header() {
 								>
 									<CardHeader className="pb-3">
 										<div className="flex items-start gap-3">
-											<div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary/20 relative">
-												<Image
-													src={user.userAvatar!}
-													alt=""
-													fill
-													className="rounded-full"
-													unoptimized
-												/>
-											</div>
+											<HoveringCard
+												hoverId={user.username}
+											>
+												<div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary/20 relative">
+													<Image
+														src={user.userAvatar!}
+														alt=""
+														fill
+														className="rounded-full"
+													/>
+												</div>
+											</HoveringCard>
 											<div className="flex-1 min-w-0">
 												{user.realName && (
 													<CardTitle className="text-lg break-all whitespace-pre-wrap leading-tight truncate">
@@ -209,6 +238,133 @@ function Header() {
 				</div>
 			)}
 		</div>
+	);
+}
+
+type Profile = {
+	username: string;
+	githubUrl?: string;
+	twitterUrl?: string;
+	linkedinUrl?: string;
+	ranking: number;
+	userAvatar: string;
+	realName?: string;
+	aboutMe?: string;
+	school?: string;
+	websites?: string[];
+	countryName?: string;
+	company?: string;
+	jobTitle?: string;
+};
+
+function HoveringCard({
+	children,
+	hoverId,
+}: {
+	children: React.ReactNode;
+	hoverId: string;
+}) {
+	const [profile, setProfile] = useState<Profile | null>(null);
+
+	async function fetchProfile(hoverId: string) {
+		try {
+			const response = await axios.post(`/api/leetcode-profile`, {
+				username: hoverId,
+			});
+			setProfile(response.data.profile);
+		} catch (error) {
+			console.error("Error fetching profile data:", error);
+		}
+	}
+
+	return (
+		<HoverCard openDelay={100} onOpenChange={() => fetchProfile(hoverId)}>
+			<HoverCardTrigger>{children}</HoverCardTrigger>
+			<HoverCardContent
+				side="top"
+				align="start"
+				className="w-72 p-4 rounded-xl shadow-lg bg-white dark:bg-gray-900 border border-border-muted cursor-pointer"
+				onClick={() =>
+					window.open(`https://leetcode.com/${hoverId}`, "_blank")
+				}
+			>
+				{profile ? (
+					<div className="flex flex-col space-y-3">
+						{/* Avatar + Name */}
+						<div className="flex items-center space-x-3">
+							<Image
+								src={profile.userAvatar}
+								alt={profile.username}
+								width={48}
+								height={48}
+								className="rounded-full"
+								unoptimized
+							/>
+							<div>
+								<p className="font-medium text-base text-gray-900 dark:text-gray-100">
+									{profile.realName || profile.username}
+								</p>
+								<p className="text-base text-gray-500">
+									Rank #{profile.ranking}
+								</p>
+							</div>
+						</div>
+
+						{/* About Me */}
+						{profile.aboutMe && (
+							<p className="text-base text-gray-700 dark:text-gray-300 line-clamp-3">
+								{profile.aboutMe}
+							</p>
+						)}
+
+						{(profile.company || profile.jobTitle) && (
+							<p className="text-base text-gray-600 dark:text-gray-400">
+								{profile.jobTitle ? `${profile.jobTitle} ` : ""}
+								{profile.company ? `@ ${profile.company}` : ""}
+							</p>
+						)}
+
+						<div className="flex space-x-3 pt-1">
+							{profile.githubUrl && (
+								<a
+									href={profile.githubUrl}
+									target="_blank"
+									rel="noreferrer"
+									className="text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white"
+								>
+									<Github size={20} />
+								</a>
+							)}
+							{profile.linkedinUrl && (
+								<a
+									href={profile.linkedinUrl}
+									target="_blank"
+									rel="noreferrer"
+									className="text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white"
+								>
+									<Linkedin size={20} />
+								</a>
+							)}
+							{profile.twitterUrl && (
+								<a
+									href={profile.twitterUrl}
+									target="_blank"
+									rel="noreferrer"
+									className="text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white"
+								>
+									<Twitter size={20} />
+								</a>
+							)}
+						</div>
+					</div>
+				) : (
+					<p className="text-base text-gray-500">
+						<Loader className="inline-block mr-2 h-4 w-4 animate-spin" />
+						Loading...
+					</p>
+				)}
+			</HoverCardContent>
+		</HoverCard>
 	);
 }
 

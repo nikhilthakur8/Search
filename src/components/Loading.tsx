@@ -34,10 +34,10 @@ export const Loading = ({
 			setQuotesNo((prev) => (prev + 1) % quotes.length);
 		}, 1000);
 		return () => clearInterval(intervalId);
-	}, []);
+	}, [quotes.length]);
 	return (
 		<div
-			className={`text-gray-400 w-full h-full text-sm md:text-lg flex justify-center items-center flex-col gap-3 my-10 ${className}`}
+			className={`text-primary/40 w-full h-full text-sm md:text-lg flex justify-center items-center flex-col gap-3 my-10 ${className}`}
 		>
 			<Loader className={`${size} animate-spin`} />
 			<span className="text-center">{quotes[quotesNo]}</span>

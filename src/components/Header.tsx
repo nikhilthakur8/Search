@@ -1,7 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Github, Linkedin, Loader, Search, Twitter } from "lucide-react";
+import {
+	BookOpen,
+	Github,
+	Globe,
+	Linkedin,
+	Loader,
+	MapPin,
+	Search,
+	Twitter,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios, { AxiosError } from "axios";
@@ -285,13 +294,13 @@ function HoveringCard({
 			<HoverCardContent
 				side="top"
 				align="start"
-				className="w-72 p-4 rounded-xl shadow-lg bg-white dark:bg-gray-900 border border-border-muted cursor-pointer"
+				className="w-80 p-4 rounded-xl shadow-lg bg-white dark:bg-gray-900 border border-border-muted cursor-pointer"
 				onClick={() =>
 					window.open(`https://leetcode.com/${hoverId}`, "_blank")
 				}
 			>
 				{profile ? (
-					<div className="flex flex-col space-y-3">
+					<div className="flex flex-col space-y-3 text-base">
 						{/* Avatar + Name */}
 						<div className="flex items-center space-x-3">
 							<Image
@@ -303,10 +312,10 @@ function HoveringCard({
 								unoptimized
 							/>
 							<div>
-								<p className="font-medium text-base text-gray-900 dark:text-gray-100">
+								<p className="font-medium text-gray-900 dark:text-gray-100">
 									{profile.realName || profile.username}
 								</p>
-								<p className="text-base text-gray-500">
+								<p className="text-gray-500">
 									Rank #{profile.ranking}
 								</p>
 							</div>
@@ -314,18 +323,55 @@ function HoveringCard({
 
 						{/* About Me */}
 						{profile.aboutMe && (
-							<p className="text-base text-gray-700 dark:text-gray-300 line-clamp-3">
+							<p className="text-gray-700 dark:text-gray-300 line-clamp-3">
 								{profile.aboutMe}
 							</p>
 						)}
 
+						{/* Job + Company */}
 						{(profile.company || profile.jobTitle) && (
-							<p className="text-base text-gray-600 dark:text-gray-400">
+							<p className="text-gray-600 dark:text-gray-400">
 								{profile.jobTitle ? `${profile.jobTitle} ` : ""}
 								{profile.company ? `@ ${profile.company}` : ""}
 							</p>
 						)}
 
+						{/* School */}
+						{profile.school && (
+							<p className="flex items-center text-gray-600 dark:text-gray-400 space-x-2">
+								<BookOpen size={16} />
+								<span>{profile.school}</span>
+							</p>
+						)}
+
+						{/* Country */}
+						{profile.countryName && (
+							<p className="flex items-center text-gray-600 dark:text-gray-400 space-x-2">
+								<MapPin size={16} />
+								<span>{profile.countryName}</span>
+							</p>
+						)}
+
+						{/* Websites */}
+						{profile.websites && profile.websites.length > 0 && (
+							<div className="flex flex-wrap gap-2 items-center text-blue-600 dark:text-blue-400">
+								<Globe size={16} />
+								{profile.websites.map((site, idx) => (
+									<a
+										key={idx}
+										href={site}
+										target="_blank"
+										rel="noreferrer"
+										onClick={(e) => e.stopPropagation()}
+										className="hover:underline whitespace-pre-wrap break-all"
+									>
+										{site.replace(/^https?:\/\//, "")}
+									</a>
+								))}
+							</div>
+						)}
+
+						{/* Social Links */}
 						<div className="flex space-x-3 pt-1">
 							{profile.githubUrl && (
 								<a
@@ -333,6 +379,7 @@ function HoveringCard({
 									target="_blank"
 									rel="noreferrer"
 									className="text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white"
+									onClick={(e) => e.stopPropagation()}
 								>
 									<Github size={20} />
 								</a>
@@ -343,6 +390,7 @@ function HoveringCard({
 									target="_blank"
 									rel="noreferrer"
 									className="text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white"
+									onClick={(e) => e.stopPropagation()}
 								>
 									<Linkedin size={20} />
 								</a>
@@ -353,6 +401,7 @@ function HoveringCard({
 									target="_blank"
 									rel="noreferrer"
 									className="text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white"
+									onClick={(e) => e.stopPropagation()}
 								>
 									<Twitter size={20} />
 								</a>
@@ -369,5 +418,4 @@ function HoveringCard({
 		</HoverCard>
 	);
 }
-
 export default Header;

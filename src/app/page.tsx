@@ -27,7 +27,7 @@ export default async function Home() {
 							</p>
 							<p className="text-base text-muted-foreground text-center mb-4">
 								<span>
-									Indexing Rate{" "}
+									Indexing Rate:{" "}
 									<span className="font-semibold text-primary">
 										{stats.indexingRatePerHour.toLocaleString()}
 										{" user"}/ hr

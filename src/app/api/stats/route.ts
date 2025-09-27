@@ -6,8 +6,24 @@ export async function GET() {
 	try {
 		await connectDB();
 		const count = await User.countDocuments();
+		const indexingRatePerHour = await User.find({
+			$and: [
+				{
+					createdAt: {
+						$gte: new Date(Date.now() - 60 * 60 * 1000),
+					},
+				},
+				{
+					createdAt: {
+						$lte: new Date(),
+					},
+				},
+			],
+		}).countDocuments();
+		const indexingRatePerSecond = indexingRatePerHour / 3600;
+
 		return NextResponse.json(
-			{ count },
+			{ count, indexingRatePerHour, indexingRatePerSecond },
 			{
 				status: 200,
 			}

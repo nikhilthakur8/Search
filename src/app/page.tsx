@@ -1,8 +1,10 @@
 import { getTotalUsers } from "@/lib/getTotalUsers";
 import { Search } from "lucide-react";
 import SearchClient from "@/components/Header";
+
 export default async function Home() {
-	const totalUsers = await getTotalUsers();
+	const stats = await getTotalUsers();
+	console.log(stats);
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
 			<div className="container mx-auto px-4 py-8">
@@ -15,13 +17,24 @@ export default async function Home() {
 						</h1>
 					</div>
 
-					{totalUsers !== null && (
-						<p className="text-base text-muted-foreground text-center mb-4">
-							Total Users Indexed Till Now:{" "}
-							<span className="font-bold text-primary">
-								{totalUsers.toLocaleString()}
-							</span>
-						</p>
+					{stats && (
+						<>
+							<p className="text-base text-muted-foreground text-center mb-2">
+								Total Users Indexed Till Now:{" "}
+								<span className="font-semibold text-primary">
+									{stats.count.toLocaleString()}
+								</span>
+							</p>
+							<p className="text-base text-muted-foreground text-center mb-4">
+								<span>
+									Indexing Rate{" "}
+									<span className="font-semibold text-primary">
+										{stats.indexingRatePerHour.toLocaleString()}
+										{" user"}/ hr
+									</span>
+								</span>
+							</p>
+						</>
 					)}
 				</div>
 
@@ -31,4 +44,4 @@ export default async function Home() {
 	);
 }
 
-export const revalidate = 3600;
+export const revalidate = 600;

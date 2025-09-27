@@ -1,12 +1,16 @@
 import axios from "axios";
-
-export const getTotalUsers = async (): Promise<number | null> => {
+type Stats = {
+	count: number;
+	indexingRatePerHour: number;
+	indexingRatePerSecond: number;
+};
+export const getTotalUsers = async (): Promise<Stats | null> => {
 	try {
 		const response = await axios.get(
-			`${process.env.NEXT_PUBLIC_BASE_URL}/api/count`
+			`${process.env.NEXT_PUBLIC_BASE_URL}/api/stats`
 		);
 		if (response.status === 200) {
-			return response.data.count;
+			return response.data;
 		}
 		return null;
 	} catch (error) {

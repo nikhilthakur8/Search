@@ -49,22 +49,22 @@ function getSearchStage(query: string) {
 						allowAnalyzedField: true,
 					},
 				},
-				// {
-				// 	regex: {
-				// 		query: `.*${escapedQuery}.*`,
-				// 		path: fields,
-				// 		score: { boost: { value: 4 } },
-				// 		allowAnalyzedField: true,
-				// 	},
-				// },
-				// {
-				// 	text: {
-				// 		query,
-				// 		path: fields,
-				// 		fuzzy: { maxEdits: 1, prefixLength: 1 },
-				// 		score: { boost: { value: 3 } },
-				// 	},
-				// },
+				{
+					regex: {
+						query: `.*${escapedQuery}.*`,
+						path: fields,
+						score: { boost: { value: 4 } },
+						allowAnalyzedField: true,
+					},
+				},
+				{
+					text: {
+						query,
+						path: fields,
+						fuzzy: { maxEdits: 1, prefixLength: 1 },
+						score: { boost: { value: 3 } },
+					},
+				},
 			],
 			minimumShouldMatch: 1,
 		},

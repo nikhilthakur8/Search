@@ -18,7 +18,7 @@ export default async function Home() {
 					{totalUsers !== null && (
 						<p className="text-base text-muted-foreground text-center mb-4">
 							Total Users Indexed Till Now:{" "}
-							<span className="font-semibold">
+							<span className="font-bold text-primary">
 								{totalUsers.toLocaleString()}
 							</span>
 						</p>

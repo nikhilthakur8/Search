@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, Loader2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios, { AxiosError } from "axios";
@@ -17,6 +17,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Image from "next/image";
+import { Loading } from "./Loading";
 
 interface SearchResult {
 	_id: string;
@@ -125,7 +126,11 @@ function Header() {
 					</form>
 				</CardContent>
 			</Card>
-
+			{loading && results.length === 0 && (
+				<div className="mt-12">
+					<Loading />
+				</div>
+			)}
 			{/* Results with Infinite Scroll */}
 			{results.length > 0 && (
 				<div className="max-w-6xl mx-auto">
@@ -136,11 +141,7 @@ function Header() {
 						dataLength={results.length}
 						next={fetchNextPage}
 						hasMore={hasMore}
-						loader={
-							<div className="text-center overflow-hidden mt-6">
-								<Loader2 className="h-10 w-10 text-muted-foreground animate-spin mx-auto" />
-							</div>
-						}
+						loader={<Loading />}
 						endMessage={
 							<p className="text-center mt-6 text-muted-foreground">
 								No more results
@@ -155,7 +156,7 @@ function Header() {
 								>
 									<CardHeader className="pb-3">
 										<div className="flex items-start gap-3">
-											<div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary/20 relative hover:sticky hover:w-32 hover:h-32 transition-all ">
+											<div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary/20 relative">
 												<Image
 													src={user.userAvatar!}
 													alt=""

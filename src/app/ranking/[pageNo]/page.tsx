@@ -84,9 +84,14 @@ async function Page({ params }: PageProps) {
 									<span className="font-semibold">
 										{user.realName || user.username}
 									</span>
-									<span className="text-gray-500">
+									<a
+										href={`https://leetcode.com/u/${user.username}`}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="text-gray-500"
+									>
 										@{user.username}
-									</span>
+									</a>
 								</div>
 							</TableCell>
 							<TableCell className="text-sm md:text-base">

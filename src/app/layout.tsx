@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import Link from "next/link";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -41,6 +42,7 @@ export default function RootLayout({
 						NextLeet.com
 					</span>
 				</Link>
+				<Toaster position="top-center" richColors theme="light"/>
 			</body>
 		</html>
 	);

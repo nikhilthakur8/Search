@@ -114,7 +114,7 @@ function Header() {
 	}, [page]);
 	return (
 		<div>
-			<Card className="max-w-2xl mx-auto mb-8">
+			<Card className="max-w-2xl mx-auto mb-8 relative">
 				<CardHeader>
 					<CardTitle className="text-center md:text-lg">
 						Search Users
@@ -162,6 +162,11 @@ function Header() {
 					</form>
 				</CardContent>
 			</Card>
+			<Button size="sm" asChild>
+				<Link href="/add" className="mb-4 mx-auto block fixed top-5 right-5">
+					Add Yourself
+				</Link>
+			</Button>
 			{loading && results.length === 0 && (
 				<div className="mt-12">
 					<Loading />

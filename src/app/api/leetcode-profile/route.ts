@@ -1,9 +1,12 @@
 import User from "@/models/leetcodeData";
+import connectDB from "@/utils/db";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
 	try {
+		await connectDB();
+
 		const { username } = await request.json();
 		const query = `
     query userPublicProfile($username: String!) {

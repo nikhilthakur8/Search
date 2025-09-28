@@ -1,6 +1,5 @@
 import { getTotalUsers } from "@/lib/getTotalUsers";
 import SearchClient from "@/components/Header";
-import Link from "next/link";
 
 export default async function Home() {
 	const stats = await getTotalUsers();
@@ -37,14 +36,6 @@ export default async function Home() {
 				</div>
 				<SearchClient />
 			</div>
-			<Link
-				href="https://nextleet.com"
-				target="_blank"
-				rel="noopener noreferrer"
-				className="fixed text-sm md:text-base right-5 bottom-5 bg-gray-900 text-white px-5 py-2 rounded-full"
-			>
-				Made by <span className="font-semibold text-yellow-500">NextLeet.com</span>
-			</Link>
 		</div>
 	);
 }

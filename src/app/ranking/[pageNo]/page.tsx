@@ -165,4 +165,4 @@ async function Page({ params }: PageProps) {
 }
 
 export default Page;
-export const revalidate = 0;
+export const revalidate = 3600;

@@ -32,7 +32,7 @@ interface PageProps {
 		pageNo: string;
 	}>;
 }
-async function Page({ params }: PageProps) {
+export default async function Page({ params }: PageProps) {
 	const { pageNo } = await params;
 	const currentPage = parseInt(pageNo, 10) || 1;
 	const { users, totalPages } = (await handleGetRankingPage(currentPage)) || {
@@ -88,7 +88,7 @@ async function Page({ params }: PageProps) {
 										href={`https://leetcode.com/u/${user.username}`}
 										target="_blank"
 										rel="noopener noreferrer"
-										className="text-gray-500"
+										className="text-gray-500 hover:text-gray-800 hover:font-semibold transition-all"
 									>
 										@{user.username}
 									</a>
@@ -169,5 +169,4 @@ async function Page({ params }: PageProps) {
 	);
 }
 
-export default Page;
 export const revalidate = 3600;

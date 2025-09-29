@@ -8,7 +8,9 @@ import {
 	Linkedin,
 	Loader,
 	MapPin,
+	Plus,
 	Search,
+	Trophy,
 	Twitter,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -124,20 +126,34 @@ function Header() {
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
+					<div className="flex justify-end space-x-2 mb-4">
+						<Button size="sm" asChild>
+							<Link href="/add">
+								<Plus />
+								Add Me
+							</Link>
+						</Button>
+						<Button size="sm" asChild>
+							<Link href="/ranking/1">
+								<Trophy />
+								Ranking
+							</Link>
+						</Button>
+					</div>
 					<form onSubmit={handleSearch} className="flex gap-2">
 						<div className="relative flex-1">
 							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+
 							<Input
 								value={query}
 								ref={inputRef}
 								onChange={(e) => setQuery(e.target.value)}
-								autoCorrect="off"
 								spellCheck={false}
 								placeholder="Enter username or real name..."
 								className="pl-10 pr-12 placeholder:text-sm text-sm md:text-base md:placeholder:text-base"
 								disabled={loading}
 							/>
-							<div className="absolute right-2 top-1/2 -translate-y-1/2 flex space-x-1 text-xs text-muted-foreground">
+							<div className="absolute right-2 top-1/2 -translate-y-1/2 flex space-x-1 text-xs">
 								<kbd className="rounded bg-muted px-1 py-0.5 font-mono text-[10px]">
 									⌘
 								</kbd>
@@ -163,14 +179,6 @@ function Header() {
 					</form>
 				</CardContent>
 			</Card>
-			<Button size="sm" asChild>
-				<Link
-					href="/add"
-					className="mb-4 mx-auto block fixed top-5 right-5"
-				>
-					Add Yourself
-				</Link>
-			</Button>
 			{loading && results.length === 0 && (
 				<div className="mt-12">
 					<Loading />

@@ -134,10 +134,14 @@ function Header() {
 							</Link>
 						</Button>
 						<Button size="sm" asChild>
-							<Link href="/ranking/1">
+							<a
+								href="/ranking/1"
+								target="_blank"
+								rel="noreferrer"
+							>
 								<Trophy />
 								Ranking
-							</Link>
+							</a>
 						</Button>
 					</div>
 					<form onSubmit={handleSearch} className="flex gap-2">

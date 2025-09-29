@@ -33,36 +33,36 @@ function getSearchStage(query: string) {
 						allowAnalyzedField: true,
 					},
 				},
-				{
-					wildcard: {
-						query: `*${query}`,
-						path: fields,
-						score: { boost: { value: 6 } },
-						allowAnalyzedField: true,
-					},
-				},
-				{
-					wildcard: {
-						query: `*${query}*`,
-						path: fields,
-						score: { boost: { value: 5 } },
-						allowAnalyzedField: true,
-					},
-				},
-				{
-					regex: {
-						query: `.*${escapedQuery}.*`,
-						path: fields,
-						score: { boost: { value: 4 } },
-						allowAnalyzedField: true,
-					},
-				},
+				// {
+				// 	wildcard: {
+				// 		query: `*${query}`,
+				// 		path: fields,
+				// 		score: { boost: { value: 6 } },
+				// 		allowAnalyzedField: true,
+				// 	},
+				// },
+				// {
+				// 	wildcard: {
+				// 		query: `*${query}*`,
+				// 		path: fields,
+				// 		score: { boost: { value: 5 } },
+				// 		allowAnalyzedField: true,
+				// 	},
+				// },
+				// {
+				// 	regex: {
+				// 		query: `.*${escapedQuery}.*`,
+				// 		path: fields,
+				// 		score: { boost: { value: 4 } },
+				// 		allowAnalyzedField: true,
+				// 	},
+				// },
 				{
 					text: {
 						query,
 						path: fields,
 						fuzzy: { maxEdits: 1, prefixLength: 1 },
-						score: { boost: { value: 3 } },
+						score: { boost: { value: 5 } },
 					},
 				},
 			],
@@ -76,7 +76,6 @@ export async function GET(request: NextRequest) {
 	const query = searchParams.get("q") || "";
 	const page = parseInt(searchParams.get("page") || "1", 10);
 	const limit = parseInt(searchParams.get("limit") || "10", 10);
-	console.log({ limit });
 	const skip = (page - 1) * limit;
 
 	if (!query) {
@@ -89,37 +88,44 @@ export async function GET(request: NextRequest) {
 	try {
 		await connectDB();
 
-		// Build search pipeline
-		const searchStage = getSearchStage(query);
-		const pipeline: PipelineStage[] = [{ $search: searchStage }];
-		const countPipeline: PipelineStage[] = [...pipeline];
-
-		// Pagination
-		pipeline.push({ $skip: skip }, { $limit: limit });
-
-		// Add search metadata
-		pipeline.push({
-			$addFields: {
-				score: { $meta: "searchScore" },
-				highlights: { $meta: "searchHighlights" },
+		const pipeline: PipelineStage[] = [
+			{ $search: getSearchStage(query) },
+			{
+				$addFields: {
+					score: { $meta: "searchScore" },
+					highlights: { $meta: "searchHighlights" },
+				},
 			},
-		});
-		pipeline.push({ $sort: { score: -1 } });
+			{
+				$facet: {
+					results: [
+						{ $sort: { score: -1 } },
+						{ $skip: skip },
+						{ $limit: limit },
+						{
+							$project: {
+								username: 1,
+								realName: 1,
+								userAvatar: 1,
+								score: 1,
+								highlights: 1,
+							},
+						},
+					],
+					totalCount: [{ $count: "total" }],
+				},
+			},
+		];
 
-		// Execute aggregation
-		const results = await User.aggregate(pipeline);
-		countPipeline.push({ $count: "total" });
-		const count = await User.aggregate(countPipeline);
-		const hasMore = skip + results.length < (count[0]?.total || 0);
+		const aggResult = await User.aggregate(pipeline);
+		const resultsData = aggResult[0]?.results || [];
+		const totalCount = aggResult[0]?.totalCount[0]?.total || 0;
+		const hasMore = skip + resultsData.length < totalCount;
+
 		return NextResponse.json(
 			{
-				users: results,
-				pagination: {
-					page,
-					limit,
-					total: count[0]?.total || 0,
-					hasMore,
-				},
+				users: resultsData,
+				pagination: { page, limit, total: totalCount, hasMore },
 			},
 			{ status: 200 }
 		);

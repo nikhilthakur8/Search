@@ -132,6 +132,7 @@ function Header() {
 								ref={inputRef}
 								onChange={(e) => setQuery(e.target.value)}
 								autoCorrect="off"
+								spellCheck={false}
 								placeholder="Enter username or real name..."
 								className="pl-10 pr-12 placeholder:text-sm text-sm md:text-base md:placeholder:text-base"
 								disabled={loading}
@@ -163,7 +164,10 @@ function Header() {
 				</CardContent>
 			</Card>
 			<Button size="sm" asChild>
-				<Link href="/add" className="mb-4 mx-auto block fixed top-5 right-5">
+				<Link
+					href="/add"
+					className="mb-4 mx-auto block fixed top-5 right-5"
+				>
 					Add Yourself
 				</Link>
 			</Button>

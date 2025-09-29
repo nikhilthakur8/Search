@@ -4,9 +4,10 @@ import connectDB from "@/utils/db";
 type User = {
 	_id: string;
 	username: string;
+	realName: string;
+	userAvatar: string;
 	ranking: number;
 	countryName?: string;
-	userAvatar?: string;
 };
 async function handleGetRankingPage(pageNo: number) {
 	const page = pageNo || 1;

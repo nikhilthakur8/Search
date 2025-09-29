@@ -32,7 +32,7 @@ export const Loading = ({
 	useEffect(() => {
 		const intervalId = setInterval(() => {
 			setQuotesNo((prev) => (prev + 1) % quotes.length);
-		}, 1000);
+		}, 1500);
 		return () => clearInterval(intervalId);
 	}, [quotes.length]);
 	return (

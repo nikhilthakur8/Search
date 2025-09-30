@@ -17,6 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
 	title: "Search LeetCode Users",
+	description: "Search LeetCode users by username, real name",
 };
 
 export default function RootLayout({
@@ -35,14 +36,14 @@ export default function RootLayout({
 					href="https://nextleet.com"
 					target="_blank"
 					rel="noopener noreferrer"
-					className="fixed text-sm border border-gray-500 md:text-base right-5 bottom-5 bg-gray-900 text-white px-5 py-2 rounded-full"
+					className="fixed text-xs border border-neutral-500 md:text-sm right-5 bottom-5 bg-neutral-900 text-white px-3 py-1.5 rounded-full"
 				>
 					Made by{" "}
 					<span className="font-semibold text-yellow-500">
 						NextLeet.com
 					</span>
 				</Link>
-				<Toaster position="top-center" richColors theme="light"/>
+				<Toaster position="top-center" richColors theme="light" />
 			</body>
 		</html>
 	);

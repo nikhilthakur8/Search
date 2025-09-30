@@ -34,6 +34,8 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { Switch } from "./ui/switch";
+import { Label } from "@radix-ui/react-label";
 
 interface SearchResult {
 	_id: string;
@@ -116,73 +118,64 @@ function Header() {
 	}, [page]);
 	return (
 		<div>
-			<Card className="max-w-2xl mx-auto mb-8 relative">
-				<CardHeader>
-					<CardTitle className="text-center md:text-lg">
-						Search Users
-					</CardTitle>
-					<CardDescription className="text-center text-sm md:!text-base">
-						Enter a username or real name to find LeetCode users
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<div className="flex justify-end space-x-2 mb-4">
-						<Button size="sm" asChild>
-							<Link href="/add">
-								<Plus />
-								Add Me
-							</Link>
-						</Button>
-						<Button size="sm" asChild>
-							<a
-								href="/ranking/1"
-								target="_blank"
-								rel="noreferrer"
-							>
-								<Trophy />
-								Ranking
-							</a>
-						</Button>
-					</div>
-					<form onSubmit={handleSearch} className="flex gap-2">
-						<div className="relative flex-1">
-							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+			<div className="max-w-3xl mx-auto px-4">
+				<div className="flex justify-end space-x-2 mb-4">
+					<Button size="sm" asChild>
+						<Link href="/add">
+							<Plus />
+							Add Me
+						</Link>
+					</Button>
+					<Button size="sm" asChild>
+						<a href="/ranking/1" target="_blank" rel="noreferrer">
+							<Trophy />
+							Ranking
+						</a>
+					</Button>
+				</div>
+				<Card className="mb-8 relative">
+					<CardContent>
+						<form onSubmit={handleSearch} className="flex gap-2">
+							<div className="relative flex-1">
+								<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+								<Input
+									value={query}
+									ref={inputRef}
+									onChange={(e) => setQuery(e.target.value)}
+									spellCheck={false}
+									placeholder="Enter username or real name..."
+									className="pl-10 pr-12 placeholder:text-sm text-sm md:text-base md:placeholder:text-base"
+									disabled={loading}
+								/>
 
-							<Input
-								value={query}
-								ref={inputRef}
-								onChange={(e) => setQuery(e.target.value)}
-								spellCheck={false}
-								placeholder="Enter username or real name..."
-								className="pl-10 pr-12 placeholder:text-sm text-sm md:text-base md:placeholder:text-base"
-								disabled={loading}
-							/>
-							<div className="absolute right-2 top-1/2 -translate-y-1/2 flex space-x-1 text-xs">
-								<kbd className="rounded bg-muted px-1 py-0.5 font-mono text-[10px]">
-									⌘
-								</kbd>
-								<kbd className="rounded bg-muted px-1 py-0.5 font-mono text-[10px]">
-									K
-								</kbd>
+								<div className="absolute right-2 top-1/2 -translate-y-1/2 flex space-x-1 text-xs">
+									<kbd className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
+										⌘
+									</kbd>
+									<kbd className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
+										K
+									</kbd>
+								</div>
 							</div>
-						</div>
-						<Button
-							type="submit"
-							disabled={loading || !query.trim()}
-							className="min-w-[100px] text-sm md:text-base"
-						>
-							{loading ? (
-								<>
-									<Loader className="mr-2 h-4 w-4 animate-spin" />
-									Searching...
-								</>
-							) : (
-								"Search"
-							)}
-						</Button>
-					</form>
-				</CardContent>
-			</Card>
+							
+							<Button
+								type="submit"
+								disabled={loading || !query.trim()}
+								className="min-w-[100px] text-sm md:text-base"
+							>
+								{loading ? (
+									<>
+										<Loader className="mr-2 h-4 w-4 animate-spin" />
+										Searching...
+									</>
+								) : (
+									"Search"
+								)}
+							</Button>
+						</form>
+					</CardContent>
+				</Card>
+			</div>
 			{loading && results.length === 0 && (
 				<div className="mt-12">
 					<Loading />

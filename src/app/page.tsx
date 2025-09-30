@@ -15,23 +15,12 @@ export default async function Home() {
 					</div>
 
 					{stats && (
-						<>
-							<p className="text-base text-muted-foreground text-center mb-2">
-								Total Users Indexed Till Now:{" "}
-								<span className="font-semibold text-primary">
-									{stats.count.toLocaleString()}
-								</span>
-							</p>
-							<p className="text-base text-muted-foreground text-center mb-4">
-								<span>
-									Indexing Rate:{" "}
-									<span className="font-semibold text-primary">
-										{stats.indexingRatePerHour.toLocaleString()}
-										{" user"}/ hr
-									</span>
-								</span>
-							</p>
-						</>
+						<p className="text-base text-muted-foreground text-center mb-2">
+							Total Users Indexed Till Now:{" "}
+							<span className="font-semibold text-primary">
+								{stats.count.toLocaleString()}
+							</span>
+						</p>
 					)}
 				</div>
 				<SearchClient />

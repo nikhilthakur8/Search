@@ -27,11 +27,13 @@ type User = {
 	ranking: number;
 	countryName?: string;
 };
+
 interface PageProps {
 	params: Promise<{
 		pageNo: string;
 	}>;
 }
+
 export default async function Page({ params }: PageProps) {
 	const { pageNo } = await params;
 	const currentPage = parseInt(pageNo, 10) || 1;
@@ -39,22 +41,23 @@ export default async function Page({ params }: PageProps) {
 		users: [],
 		totalPages: 1,
 	};
+
 	return (
-		<div className="min-h-screen py-20 px-5 max-w-7xl mx-auto ">
-			<h1 className="text-2xl md:text-3xl font-semibold mb-6 text-center">
+		<div className="min-h-screen py-20 px-5 max-w-7xl mx-auto">
+			<h1 className="text-2xl md:text-3xl font-semibold mb-6 text-center text-neutral-900 dark:text-neutral-100">
 				LeetCode User Rankings
 			</h1>
 
-			<Table className="bg-gray-50  border-collapse border border-gray-300 shadow-md ">
+			<Table className="bg-neutral-50 dark:bg-neutral-900 border-collapse border border-neutral-300 dark:border-neutral-700 shadow-md">
 				<TableHeader>
-					<TableRow className="">
-						<TableHead className="p-4 text-sm md:text-base">
+					<TableRow>
+						<TableHead className="p-4 text-sm md:text-base text-neutral-900 dark:text-neutral-100">
 							Rank
 						</TableHead>
-						<TableHead className="p-4 text-sm md:text-base">
+						<TableHead className="p-4 text-sm md:text-base text-neutral-900 dark:text-neutral-100">
 							User
 						</TableHead>
-						<TableHead className="p-4 text-sm md:text-base">
+						<TableHead className="p-4 text-sm md:text-base text-neutral-900 dark:text-neutral-100">
 							Country
 						</TableHead>
 					</TableRow>
@@ -64,12 +67,12 @@ export default async function Page({ params }: PageProps) {
 					{users.map((user: User) => (
 						<TableRow
 							key={user._id}
-							className="hover:bg-gray-100 cursor-pointer transition-colors"
+							className="hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer transition-colors"
 						>
-							<TableCell className="pl-4 text-sm md:text-base font-medium">
+							<TableCell className="pl-4 text-sm md:text-base font-medium text-neutral-900 dark:text-neutral-100">
 								{user.ranking}
 							</TableCell>
-							<TableCell className="flex items-center gap-4 text-sm md:text-base">
+							<TableCell className="flex items-center gap-4 text-sm md:text-base text-neutral-900 dark:text-neutral-100">
 								<Image
 									src={
 										user.userAvatar || "/default-avatar.png"
@@ -88,13 +91,13 @@ export default async function Page({ params }: PageProps) {
 										href={`https://leetcode.com/u/${user.username}`}
 										target="_blank"
 										rel="noopener noreferrer"
-										className="text-gray-500 hover:text-gray-800 hover:font-semibold transition-all"
+										className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 hover:font-semibold transition-all"
 									>
 										@{user.username}
 									</a>
 								</div>
 							</TableCell>
-							<TableCell className="text-sm md:text-base">
+							<TableCell className="text-sm md:text-base text-neutral-900 dark:text-neutral-100">
 								{user.countryName || ""}
 							</TableCell>
 						</TableRow>
@@ -104,65 +107,55 @@ export default async function Page({ params }: PageProps) {
 
 			<div className="flex justify-center mt-6">
 				<Pagination>
-					<Pagination>
-						<PaginationContent>
-							<PaginationPrevious
-								href={`/ranking/${
-									currentPage > 1 ? currentPage - 1 : 1
-								}`}
-								className={
-									currentPage === 1
-										? "opacity-50 pointer-events-none"
-										: ""
-								}
-							/>
-							{[-2, -1, 0, 1, 2].map((index) => {
-								if (
-									currentPage + index < 1 ||
-									currentPage + index > totalPages
-								) {
-									return null;
-								}
-								const page = currentPage + index;
-								return (
-									<PaginationItem key={page}>
-										<PaginationLink
-											href={`/ranking/${page}`}
-											isActive={page === currentPage}
-										>
-											{page}
-										</PaginationLink>
-									</PaginationItem>
-								);
-							})}
-							{currentPage < totalPages - 1 && (
-								<PaginationEllipsis />
-							)}
-							{currentPage < totalPages && (
-								<PaginationItem>
+					<PaginationContent>
+						<PaginationPrevious
+							href={`/ranking/${
+								currentPage > 1 ? currentPage - 1 : 1
+							}`}
+							className={
+								currentPage === 1
+									? "opacity-50 pointer-events-none"
+									: ""
+							}
+						/>
+						{[-2, -1, 0, 1, 2].map((index) => {
+							const page = currentPage + index;
+							if (page < 1 || page > totalPages) return null;
+							return (
+								<PaginationItem key={page}>
 									<PaginationLink
-										href={`/ranking/${totalPages}`}
-										isActive={totalPages === currentPage}
+										href={`/ranking/${page}`}
+										isActive={page === currentPage}
 									>
-										{totalPages}
+										{page}
 									</PaginationLink>
 								</PaginationItem>
-							)}
-
-							<PaginationNext
-								href={`/ranking/${
-									currentPage < totalPages
-										? currentPage + 1
-										: totalPages
-								}`}
-								className={
-									currentPage === totalPages
-										? "opacity-50 pointer-events-none"
-										: ""
-								}
-							/>
-						</PaginationContent>
-					</Pagination>
+							);
+						})}
+						{currentPage < totalPages - 1 && <PaginationEllipsis />}
+						{currentPage < totalPages && (
+							<PaginationItem>
+								<PaginationLink
+									href={`/ranking/${totalPages}`}
+									isActive={totalPages === currentPage}
+								>
+									{totalPages}
+								</PaginationLink>
+							</PaginationItem>
+						)}
+						<PaginationNext
+							href={`/ranking/${
+								currentPage < totalPages
+									? currentPage + 1
+									: totalPages
+							}`}
+							className={
+								currentPage === totalPages
+									? "opacity-50 pointer-events-none"
+									: ""
+							}
+						/>
+					</PaginationContent>
 				</Pagination>
 			</div>
 		</div>
@@ -170,5 +163,3 @@ export default async function Page({ params }: PageProps) {
 }
 
 export const revalidate = 3600;
-
-export const dynamic = "force-dynamic";

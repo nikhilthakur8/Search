@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import Link from "next/link";
 import { Toaster } from "@/components/ui/sonner";
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
+import { ThemeProvider } from "next-themes";
+import { Metadata } from "next";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -26,24 +28,27 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
-				{children}
-				<Analytics />
-				<Link
-					href="https://nextleet.com"
-					target="_blank"
-					rel="noopener noreferrer"
-					className="fixed text-xs border border-neutral-500 md:text-sm right-5 bottom-5 bg-neutral-900 text-white px-3 py-1.5 rounded-full"
-				>
-					Made by{" "}
-					<span className="font-semibold text-yellow-500">
-						NextLeet.com
-					</span>
-				</Link>
-				<Toaster position="top-center" richColors theme="light" />
+				<ThemeProvider attribute="class" defaultTheme="system">
+					{children}
+					<Analytics />
+					<Link
+						href="https://nextleet.com"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="fixed text-xs border border-neutral-500 md:text-sm right-5 bottom-5 bg-neutral-900 text-white px-3 py-1.5 rounded-full"
+					>
+						Made by{" "}
+						<span className="font-semibold text-yellow-500">
+							NextLeet.com
+						</span>
+					</Link>
+					<AnimatedThemeToggler className="fixed right-5 top-5" />
+					<Toaster position="top-center" richColors theme="light" />
+				</ThemeProvider>
 			</body>
 		</html>
 	);

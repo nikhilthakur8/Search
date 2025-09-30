@@ -165,7 +165,7 @@ function Header() {
 							>
 								{loading ? (
 									<>
-										<Loader className="mr-2 h-4 w-4 animate-spin" />
+										<Loader className="h-4 w-4 animate-spin" />
 										Searching...
 									</>
 								) : (
@@ -308,7 +308,7 @@ function HoveringCard({
 			<HoverCardContent
 				side="top"
 				align="start"
-				className="w-80 p-4 rounded-xl shadow-lg bg-white dark:bg-gray-900 border border-border-muted cursor-pointer"
+				className="w-80 p-4 rounded-xl shadow-lg bg-white dark:bg-neutral-900 border border-border-muted cursor-pointer"
 				onClick={() =>
 					window.open(`https://leetcode.com/${hoverId}`, "_blank")
 				}
@@ -326,10 +326,10 @@ function HoveringCard({
 								unoptimized
 							/>
 							<div>
-								<p className="font-medium text-gray-900 dark:text-gray-100">
+								<p className="font-medium text-neutral-900 dark:text-neutral-100">
 									{profile.realName || profile.username}
 								</p>
-								<p className="text-gray-500">
+								<p className="text-neutral-500">
 									Rank #{profile.ranking}
 								</p>
 							</div>
@@ -337,14 +337,14 @@ function HoveringCard({
 
 						{/* About Me */}
 						{profile.aboutMe && (
-							<p className="text-gray-700 dark:text-gray-300 line-clamp-3">
+							<p className="text-neutral-700 dark:text-neutral-300 line-clamp-3">
 								{profile.aboutMe}
 							</p>
 						)}
 
 						{/* Job + Company */}
 						{(profile.company || profile.jobTitle) && (
-							<p className="text-gray-600 dark:text-gray-400">
+							<p className="text-neutral-600 dark:text-neutral-400">
 								{profile.jobTitle ? `${profile.jobTitle} ` : ""}
 								{profile.company ? `@ ${profile.company}` : ""}
 							</p>
@@ -352,7 +352,7 @@ function HoveringCard({
 
 						{/* School */}
 						{profile.school && (
-							<p className="flex items-center text-gray-600 dark:text-gray-400 space-x-2">
+							<p className="flex items-center text-neutral-600 dark:text-neutral-400 space-x-2">
 								<BookOpen size={16} />
 								<span>{profile.school}</span>
 							</p>
@@ -360,7 +360,7 @@ function HoveringCard({
 
 						{/* Country */}
 						{profile.countryName && (
-							<p className="flex items-center text-gray-600 dark:text-gray-400 space-x-2">
+							<p className="flex items-center text-neutral-600 dark:text-neutral-400 space-x-2">
 								<MapPin size={16} />
 								<span>{profile.countryName}</span>
 							</p>
@@ -392,7 +392,7 @@ function HoveringCard({
 									href={profile.githubUrl}
 									target="_blank"
 									rel="noreferrer"
-									className="text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white"
+									className="text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white"
 									onClick={(e) => e.stopPropagation()}
 								>
 									<Github size={20} />
@@ -403,7 +403,7 @@ function HoveringCard({
 									href={profile.linkedinUrl}
 									target="_blank"
 									rel="noreferrer"
-									className="text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white"
+									className="text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white"
 									onClick={(e) => e.stopPropagation()}
 								>
 									<Linkedin size={20} />
@@ -414,7 +414,7 @@ function HoveringCard({
 									href={profile.twitterUrl}
 									target="_blank"
 									rel="noreferrer"
-									className="text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white"
+									className="text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white"
 									onClick={(e) => e.stopPropagation()}
 								>
 									<Twitter size={20} />
@@ -423,7 +423,7 @@ function HoveringCard({
 						</div>
 					</div>
 				) : (
-					<p className="text-base text-gray-500">
+					<p className="text-base text-neutral-500">
 						<Loader className="inline-block mr-2 h-4 w-4 animate-spin" />
 						Loading...
 					</p>

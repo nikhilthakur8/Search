@@ -47,7 +47,7 @@ export default function RootLayout({
 						</span>
 					</Link>
 					<AnimatedThemeToggler className="fixed right-5 top-5" />
-					<Toaster position="top-center" richColors theme="light" />
+					<Toaster position="top-center" richColors  />
 				</ThemeProvider>
 			</body>
 		</html>

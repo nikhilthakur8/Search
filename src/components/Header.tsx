@@ -12,6 +12,7 @@ import {
 	Search,
 	Trophy,
 	Twitter,
+	TwitterIcon,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -119,20 +120,37 @@ function Header() {
 	return (
 		<div>
 			<div className="max-w-3xl mx-auto px-4">
-				<div className="flex justify-end space-x-2 mb-4">
+				<div className="flex justify-between  mb-4">
 					<Button size="sm" asChild>
-						<Link href="/add">
-							<Plus />
-							Add Me
-						</Link>
-					</Button>
-					<Button size="sm" asChild>
-						<a href="/ranking/1" target="_blank" rel="noreferrer">
-							<Trophy />
-							Ranking
+						<a
+							href="https://x.com/nikhilthakur80"
+							target="_blank"
+							rel="noreferrer"
+						>
+							<TwitterIcon />
+							Builder
 						</a>
 					</Button>
+					<div className="space-x-2">
+						<Button size="sm" asChild>
+							<Link href="/add">
+								<Plus />
+								Add Me
+							</Link>
+						</Button>
+						<Button size="sm" asChild>
+							<a
+								href="/ranking/1"
+								target="_blank"
+								rel="noreferrer"
+							>
+								<Trophy />
+								Ranking
+							</a>
+						</Button>
+					</div>
 				</div>
+
 				<Card className="mb-8 relative">
 					<CardContent>
 						<form onSubmit={handleSearch} className="flex gap-2">
@@ -157,7 +175,7 @@ function Header() {
 									</kbd>
 								</div>
 							</div>
-							
+
 							<Button
 								type="submit"
 								disabled={loading || !query.trim()}

@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 function getSearchStage(query: string) {
 	const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	const fields = ["username", "realName"];
+	const compactQuery = query.replace(/\s+/g, "");
 
 	return {
 		index: "default",
@@ -16,6 +17,13 @@ function getSearchStage(query: string) {
 						query,
 						path: fields,
 						score: { boost: { value: 10 } },
+					},
+				},
+				{
+					text: {
+						query: compactQuery,
+						path: fields,
+						score: { boost: { value: 9 } },
 					},
 				},
 				{
@@ -33,6 +41,7 @@ function getSearchStage(query: string) {
 						allowAnalyzedField: true,
 					},
 				},
+
 				// {
 				// 	wildcard: {
 				// 		query: `*${query}`,

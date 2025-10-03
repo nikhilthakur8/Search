@@ -35,8 +35,7 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Switch } from "./ui/switch";
-import { Label } from "@radix-ui/react-label";
+import { redirect } from "next/navigation";
 
 interface SearchResult {
 	_id: string;
@@ -54,9 +53,9 @@ function Header() {
 	const [hasSearched, setHasSearched] = useState(false);
 	const [responseTotal, setResponseTotal] = useState(0);
 	const inputRef = useRef<HTMLInputElement>(null);
+
 	const fetchUsers = async (reset = false) => {
 		if (!query.trim()) return;
-
 		setLoading(true);
 		try {
 			const response = await axios.get(
@@ -105,11 +104,18 @@ function Header() {
 			if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
 				e.preventDefault();
 				inputRef.current?.focus();
+			} else if (
+				(e.ctrlKey || e.metaKey) &&
+				e.key.toLowerCase() === "a"
+			) {
+				e.preventDefault();
+				redirect("/add");
 			}
 		};
-
 		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
+		return () => {
+			window.removeEventListener("keydown", handleKeyDown);
+		};
 	}, []);
 
 	// Fetch data whenever page changes

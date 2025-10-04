@@ -118,9 +118,28 @@ export default async function Page({ params }: PageProps) {
 									: ""
 							}
 						/>
-						{[-2, -1, 0, 1, 2].map((index) => {
+						{/* start page */}
+
+						<PaginationItem>
+							<PaginationLink
+								href={`/ranking/1`}
+								isActive={currentPage === 1}
+							>
+								1
+							</PaginationLink>
+						</PaginationItem>
+
+						{/* For Future Reference:
+						Just use this formula currentPage - startPage(0) > 3
+						Similarly for endPage - currentPage > 3 */}
+	
+						{/* start and mid page ellipsis */}
+						{currentPage > 3 && <PaginationEllipsis />}
+
+						{/* previous, current and next page */}
+						{[-1, 0, 1].map((index) => {
 							const page = currentPage + index;
-							if (page < 1 || page > totalPages) return null;
+							if (page <= 1 || page >= totalPages) return null;
 							return (
 								<PaginationItem key={page}>
 									<PaginationLink
@@ -132,17 +151,20 @@ export default async function Page({ params }: PageProps) {
 								</PaginationItem>
 							);
 						})}
-						{currentPage < totalPages - 1 && <PaginationEllipsis />}
-						{currentPage < totalPages && (
-							<PaginationItem>
-								<PaginationLink
-									href={`/ranking/${totalPages}`}
-									isActive={totalPages === currentPage}
-								>
-									{totalPages}
-								</PaginationLink>
-							</PaginationItem>
-						)}
+
+						{/* mid and end page ellipsis */}
+						{totalPages - currentPage > 3 && <PaginationEllipsis />}
+
+						{/* end page */}
+						<PaginationItem>
+							<PaginationLink
+								href={`/ranking/${totalPages}`}
+								isActive={totalPages === currentPage}
+							>
+								{totalPages}
+							</PaginationLink>
+						</PaginationItem>
+
 						<PaginationNext
 							href={`/ranking/${
 								currentPage < totalPages

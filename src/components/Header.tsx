@@ -104,12 +104,6 @@ function Header() {
 			if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
 				e.preventDefault();
 				inputRef.current?.focus();
-			} else if (
-				(e.ctrlKey || e.metaKey) &&
-				e.key.toLowerCase() === "a"
-			) {
-				e.preventDefault();
-				redirect("/add");
 			}
 		};
 		window.addEventListener("keydown", handleKeyDown);

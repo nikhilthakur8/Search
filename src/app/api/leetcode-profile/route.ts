@@ -34,6 +34,12 @@ export async function POST(request: NextRequest) {
 			query,
 			variables,
 		});
+		if (!response.data.data.matchedUser) {
+			return NextResponse.json(
+				{ error: "User not found" },
+				{ status: 404 }
+			);
+		}
 		const data = {
 			username: response.data.data.matchedUser.username,
 			githubUrl: response.data.data.matchedUser.githubUrl,

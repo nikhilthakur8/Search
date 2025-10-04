@@ -160,18 +160,32 @@ function Home() {
 									ref={inputRef}
 									onChange={(e) => setQuery(e.target.value)}
 									spellCheck={false}
+									onKeyDown={(e) => {
+										console.log(e.key);
+										if (e.key === "Escape") {
+											setQuery("");
+										}
+									}}
 									placeholder="Enter username or real name..."
 									className="pl-10 pr-12 placeholder:text-sm text-sm md:text-base md:placeholder:text-base"
 									disabled={loading}
 								/>
 
 								<div className="absolute right-2 top-1/2 -translate-y-1/2 flex space-x-1 text-xs">
-									<kbd className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
-										⌘
-									</kbd>
-									<kbd className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
-										K
-									</kbd>
+									{query.trim().length === 0 ? (
+										<>
+											<kbd className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
+												⌘
+											</kbd>
+											<kbd className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
+												K
+											</kbd>
+										</>
+									) : (
+										<kbd className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
+											ESC
+										</kbd>
+									)}
 								</div>
 							</div>
 
@@ -190,10 +204,6 @@ function Home() {
 								)}
 							</Button>
 						</form>
-						<span className="text-center text-muted-foreground text-xs md:text-sm mt-4 block">
-							Pro tip : if your friend watches anime, even God
-							can’t find their name.
-						</span>
 					</CardContent>
 				</Card>
 			</div>
@@ -453,4 +463,5 @@ function HoveringCard({
 		</HoverCard>
 	);
 }
+
 export default Home;

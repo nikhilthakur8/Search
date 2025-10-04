@@ -1,10 +1,10 @@
 import { getTotalUsers } from "@/lib/getTotalUsers";
-import SearchClient from "@/components/Header";
+import SearchClient from "@/components/Home";
 
 export default async function Home() {
 	const stats = await getTotalUsers();
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-950 dark:to-neutral-900">
+		<div className="min-h-svh bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-950 dark:to-neutral-900">
 			<div className="container mx-auto px-4 py-8">
 				{/* Header */}
 				<div className="text-center mb-8">

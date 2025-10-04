@@ -35,7 +35,6 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { redirect } from "next/navigation";
 
 interface SearchResult {
 	_id: string;
@@ -44,7 +43,7 @@ interface SearchResult {
 	userAvatar: string;
 	[key: string]: unknown;
 }
-function Header() {
+function Home() {
 	const [query, setQuery] = useState("");
 	const [results, setResults] = useState<SearchResult[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -191,6 +190,10 @@ function Header() {
 								)}
 							</Button>
 						</form>
+						<span className="text-center text-muted-foreground text-xs md:text-sm mt-4 block">
+							Pro tip : if your friend watches anime, even God
+							can’t find their name.
+						</span>
 					</CardContent>
 				</Card>
 			</div>
@@ -450,4 +453,4 @@ function HoveringCard({
 		</HoverCard>
 	);
 }
-export default Header;
+export default Home;

@@ -116,7 +116,6 @@ export async function GET(request: NextRequest) {
 								username: 1,
 								realName: 1,
 								userAvatar: 1,
-								score: 1,
 								highlights: 1,
 							},
 						},

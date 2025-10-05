@@ -51,7 +51,14 @@ export async function POST(request: NextRequest) {
 		await User.findOneAndUpdate(
 			{ username },
 			{ $set: data },
-			{ new: true, upsert: true }
+			{
+				new: true,
+				upsert: true,
+				collation: {
+					locale: "en",
+					strength: 2,
+				},
+			}
 		);
 		return NextResponse.json(
 			{

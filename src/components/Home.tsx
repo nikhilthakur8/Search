@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
 	BookOpen,
+	Fuel,
 	Github,
 	Globe,
 	Linkedin,
@@ -10,6 +11,7 @@ import {
 	MapPin,
 	Plus,
 	Search,
+	Share2,
 	Trophy,
 	Twitter,
 	TwitterIcon,
@@ -119,17 +121,29 @@ function Home() {
 	return (
 		<div>
 			<div className="max-w-3xl mx-auto px-4">
-				<div className="flex justify-between  mb-4">
-					<Button size="sm" asChild>
-						<a
-							href="https://x.com/nikhilthakur80"
-							target="_blank"
-							rel="noreferrer"
-						>
-							<TwitterIcon />
-							Builder
-						</a>
-					</Button>
+				<div className="flex flex-col md:flex-row space-y-5 md:space-y-0 justify-between  mb-4">
+					<div className="space-x-2">
+						<Button size="sm" asChild>
+							<a
+								href="https://x.com/nikhilthakur80"
+								target="_blank"
+								rel="noreferrer"
+							>
+								<TwitterIcon />
+								Builder
+							</a>
+						</Button>
+						<Button size="sm" asChild>
+							<a
+								href="https://x.com/intent/tweet?text=Discover%20your%20LeetCode%20friends!%20%F0%9F%94%8D%20Search%20by%20username%20or%20real%20name.%20%20Check%20it%20out%20at%20https%3A%2F%2Fsearch.nextleet.com"
+								target="_blank"
+								rel="noreferrer"
+							>
+								<Share2 />
+								Share
+							</a>
+						</Button>
+					</div>
 					<div className="space-x-2">
 						<Button size="sm" asChild>
 							<Link href="/add">
@@ -145,6 +159,17 @@ function Home() {
 							>
 								<Trophy />
 								Ranking
+							</a>
+						</Button>
+						<Button size="sm" asChild>
+							<a
+								href="https://github.com/sponsors/nikhilthakur8"
+								target="_blank"
+								rel="noopener noreferrer"
+								className="flex items-center gap-2 px-4 py-2 rounded-md !bg-pink-800 text-white font-medium !hover:bg-pink-700 transition-colors"
+							>
+								<Fuel />
+								<span>Fuel Up</span>
 							</a>
 						</Button>
 					</div>

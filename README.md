@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# search.nextleet.com
 
-## Getting Started
+**search.nextleet.com** is a web app that allows you to discover and connect with your friends on [LeetCode](https://leetcode.com) by searching for their usernames or real names. It makes it easy to find and explore LeetCode profiles in one place.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 🔍 **Search by Username or Real Name**  
+  Quickly find any LeetCode user by typing their username or real name.  
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- 📊 **View Public Profile Information**  
+  See the user's LeetCode stats, solved problems, and other public details (if available).  
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- ⚡ **Fast & Simple**  
+  Minimalistic design for quick and easy search without unnecessary clutter.  
 
-## Learn More
+- 🌐 **Free to Use**  
+  Completely free, no signup required.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## How it Works
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Enter the LeetCode username or real name in the search bar.  
+2. The app searches through indexed public profiles.  
+3. Results are displayed with links to the users' LeetCode profiles.  
 
-## Deploy on Vercel
+*Note:* Only publicly available information is indexed.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Tech Stack
+
+- **Frontend:** React.js, Tailwind CSS  
+- **Backend:** Node.js  
+- **Database:** MongoDB (stores indexed public profiles)  
+- **Hosting:** Vercel  
+
+---
+
+## Usage
+
+1. Open [https://search.nextleet.com](https://search.nextleet.com).  
+2. Enter your friend's username or real name in the search bar.  
+3. Click on the result to view their LeetCode profile.  
+
+**Discover and connect with your LeetCode friends in seconds!** 🚀

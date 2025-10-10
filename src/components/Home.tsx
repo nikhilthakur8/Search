@@ -122,7 +122,7 @@ function Home() {
 		<div>
 			<div className="max-w-3xl mx-auto px-4">
 				<div className="flex flex-col md:flex-row space-y-5 md:space-y-0 justify-between  mb-4">
-					<div className="space-x-2">
+					<div>
 						<Button size="sm" asChild>
 							<a
 								href="https://x.com/nikhilthakur80"
@@ -131,16 +131,6 @@ function Home() {
 							>
 								<TwitterIcon />
 								Builder
-							</a>
-						</Button>
-						<Button size="sm" asChild>
-							<a
-								href="https://x.com/intent/tweet?text=Discover%20your%20LeetCode%20friends!%20%F0%9F%94%8D%20Search%20by%20username%20or%20real%20name.%20%20Check%20it%20out%20at%20https%3A%2F%2Fsearch.nextleet.com"
-								target="_blank"
-								rel="noreferrer"
-							>
-								<Share2 />
-								Share
 							</a>
 						</Button>
 					</div>

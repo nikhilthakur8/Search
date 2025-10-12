@@ -8,6 +8,7 @@ export async function POST(request: NextRequest) {
 		await connectDB();
 
 		const { username } = await request.json();
+		const trimmedUsername = username.trim();
 		const query = `
     query userPublicProfile($username: String!) {
   matchedUser(username: $username) {
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
   }
 }
     `;
-		const variables = { username };
+		const variables = { username: trimmedUsername };
 		const response = await axios.post("https://leetcode.com/graphql/", {
 			query,
 			variables,
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
 		};
 
 		await User.findOneAndUpdate(
-			{ username },
+			{ username: trimmedUsername },
 			{ $set: data },
 			{
 				new: true,

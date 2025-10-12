@@ -336,14 +336,22 @@ function HoveringCard({
 	hoverId: string;
 }) {
 	const [profile, setProfile] = useState<Profile | null>(null);
-
+	const [error, setError] = useState<string | null>(null);
 	async function fetchProfile(hoverId: string) {
+		if (profile?.username === hoverId) return;
 		try {
 			const response = await axios.post(`/api/leetcode-profile`, {
 				username: hoverId,
 			});
 			setProfile(response.data.profile);
 		} catch (error) {
+			if (axios.isAxiosError(error)) {
+				setError(
+					error.response?.data.error || "Failed to load profile"
+				);
+			} else {
+				setError("Failed to load profile");
+			}
 			console.error("Error fetching profile data:", error);
 		}
 	}
@@ -359,7 +367,9 @@ function HoveringCard({
 					window.open(`https://leetcode.com/${hoverId}`, "_blank")
 				}
 			>
-				{profile ? (
+				{error ? (
+					<p className="text-red-500">{error}</p>
+				) : profile ? (
 					<div className="flex flex-col space-y-3 text-base">
 						{/* Avatar + Name */}
 						<div className="flex items-center space-x-3">

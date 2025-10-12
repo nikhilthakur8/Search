@@ -6,7 +6,7 @@ const users = new mongoose.Schema(
 		username: String,
 		password: String,
 	},
-	{ strict: false }
+	{ strict: false, timestamps: true }
 );
 const User = mongoose.models.User || mongoose.model("User", users);
 export default User;

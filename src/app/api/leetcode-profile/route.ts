@@ -9,6 +9,27 @@ export async function POST(request: NextRequest) {
 
 		const { username } = await request.json();
 		const trimmedUsername = username.trim();
+
+		const userData = await User.findOne({ username: trimmedUsername });
+
+		// userData is stale if it's older than 30 days
+		const isUserDataStale =
+			userData &&
+			Date.now() - new Date(userData.updatedAt).getTime() >
+				30 * 24 * 60 * 60 * 1000;
+
+		if (userData && !isUserDataStale) {
+			return NextResponse.json(
+				{
+					message: "Profile data fetched successfully",
+					profile: userData,
+				},
+				{
+					status: 200,
+				}
+			);
+		}
+
 		const query = `
     query userPublicProfile($username: String!) {
   matchedUser(username: $username) {

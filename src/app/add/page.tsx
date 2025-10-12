@@ -34,7 +34,7 @@ function Page() {
 		}
 		setLoading(true);
 		try {
-			await axios.post("/api/leetcode-profile", { username });
+			await axios.post("/api/add-me", { username });
 			toast.success(`User ${username} added successfully`);
 			setUsername("");
 		} catch (error: unknown) {

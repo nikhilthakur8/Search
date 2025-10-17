@@ -122,7 +122,7 @@ function Home() {
 		<div>
 			<div className="max-w-3xl mx-auto px-4">
 				<div className="flex flex-col md:flex-row space-y-5 md:space-y-0 justify-between  mb-4">
-					<div>
+					{/* <div>
 						<Button size="sm" asChild>
 							<a
 								href="https://x.com/nikhilthakur80"
@@ -133,8 +133,8 @@ function Home() {
 								Builder
 							</a>
 						</Button>
-					</div>
-					<div className="space-x-2">
+					</div> */}
+					<div className="space-x-2 ml-auto">
 						<Button size="sm" asChild>
 							<Link href="/add">
 								<Plus />

@@ -151,7 +151,7 @@ function Home() {
 								Ranking
 							</a>
 						</Button>
-						<Button size="sm" asChild>
+						{/* <Button size="sm" asChild>
 							<a
 								href="https://github.com/sponsors/nikhilthakur8"
 								target="_blank"
@@ -161,7 +161,7 @@ function Home() {
 								<Fuel />
 								<span>Fuel Up</span>
 							</a>
-						</Button>
+						</Button> */}
 					</div>
 				</div>
 

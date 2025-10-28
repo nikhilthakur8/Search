@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
 	try {
 		await connectDB();
-		const count = await User.countDocuments();
+		const count = await User.estimatedDocumentCount();
 		const indexingRatePerHour = await User.find({
 			$and: [
 				{

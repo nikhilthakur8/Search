@@ -1,5 +1,4 @@
 import User from "@/models/leetcodeData";
-import { getCache, setCache } from "@/lib/cache";
 import connectDB from "@/utils/db";
 type User = {
 	_id: string;
@@ -14,19 +13,9 @@ async function handleGetRankingPage(pageNo: number) {
 	const limit = 25;
 	const skip = (page - 1) * limit;
 	try {
-		const countCacheKey = `ranking:count`;
-		let totalUsers = await getCache(countCacheKey);
-
 		await connectDB();
 
-		if (!totalUsers) {
-			const totalUsersCount = await User.countDocuments({
-				ranking: { $exists: true },
-			});
-			totalUsers = totalUsersCount;
-			await setCache(countCacheKey, totalUsersCount, 3600);
-		}
-
+		const totalUsers = await User.estimatedDocumentCount();
 		const users = await User.find({
 			ranking: {
 				$exists: true,

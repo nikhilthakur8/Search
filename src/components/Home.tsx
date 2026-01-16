@@ -123,7 +123,7 @@ function Home() {
 			<div className="max-w-3xl mx-auto px-4">
 				<div className="flex flex-col md:flex-row space-y-5 md:space-y-0 justify-between  mb-4">
 					<div>
-						<Button size="sm" asChild>
+						{/* <Button size="sm" asChild>
 							<a
 								href="https://x.com/nikhilthakur80"
 								target="_blank"
@@ -132,7 +132,7 @@ function Home() {
 								<TwitterIcon />
 								Builder
 							</a>
-						</Button>
+						</Button> */}
 					</div>
 					<div className="space-x-2">
 						<Button size="sm" asChild>

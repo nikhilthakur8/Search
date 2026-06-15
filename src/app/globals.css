@@ -125,3 +125,29 @@
     animation: none;
     mix-blend-mode: normal;
 }
+
+/* ── Shutdown announcement ───────────────────────────────── */
+@keyframes ann-rise {
+  from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+
+@keyframes ann-ember {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.06); }
+}
+
+@keyframes ann-glow {
+  0%, 100% { opacity: 0.35; }
+  50%      { opacity: 0.6; }
+}
+
+.ann-rise {
+  opacity: 0;
+  animation: ann-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ann-rise { animation: none; opacity: 1; }
+  .ann-ember, .ann-glow { animation: none; }
+}

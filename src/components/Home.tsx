@@ -39,10 +39,12 @@ import {
 } from "@/components/ui/hover-card";
 
 interface SearchResult {
-	_id: string;
+	id: string;
 	username: string;
 	realName?: string;
-	userAvatar: string;
+	userAvatar?: string;
+	ranking?: number;
+	countryName?: string;
 	[key: string]: unknown;
 }
 function Home() {
@@ -283,8 +285,9 @@ function Home() {
 												variant="outline"
 												className="text-xs"
 											>
-												ID: {user._id.substring(0, 8)}
-												...
+												{user.ranking
+													? `Rank #${user.ranking.toLocaleString()}`
+													: (user.countryName ?? "Unranked")}
 											</Badge>
 											<Link
 												href={`https://leetcode.com/${user.username}`}

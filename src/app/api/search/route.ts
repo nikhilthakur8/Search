@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
 				q,
 				attributesToSearchOn: SEARCH_FIELDS,
 				attributesToRetrieve: [
+					"id",
 					"username",
 					"realName",
 					"userAvatar",
@@ -48,6 +49,7 @@ export async function GET(request: NextRequest) {
 		});
 
 		const users = (hits as Hit[]).map((hit) => ({
+			id: hit.id,
 			username: hit.username,
 			realName: hit.realName,
 			userAvatar: hit.userAvatar,

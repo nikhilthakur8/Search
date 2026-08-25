@@ -103,19 +103,22 @@ const flush = async () => {
 
 // Scan for balanced top-level objects; a truncated final object is never emitted.
 let buf = "";
+let pos = 0;
 let depth = 0;
 let inStr = false;
 let esc = false;
 let start = -1;
 
-const stream = fs.createReadStream(file, { encoding: "utf8", highWaterMark: 1 << 22 });
+const stream = fs.createReadStream(file, { encoding: "utf8", highWaterMark: 1 << 20 });
 
 for await (const chunk of stream) {
 	bytes += Buffer.byteLength(chunk, "utf8");
 	buf += chunk;
 	let consumed = 0;
 
-	for (let i = 0; i < buf.length; i++) {
+	// resume exactly where the previous chunk stopped - never rescan, or the
+	// carried depth/inStr state gets applied twice and the scan never closes
+	for (let i = pos; i < buf.length; i++) {
 		const c = buf[i];
 		if (inStr) {
 			if (esc) esc = false;
@@ -143,8 +146,15 @@ for await (const chunk of stream) {
 		if (batch.length >= batchSize) await flush();
 	}
 
-	buf = consumed ? buf.slice(consumed) : buf;
-	if (start >= 0) start -= consumed;
+	pos = buf.length;
+	if (consumed) {
+		buf = buf.slice(consumed);
+		pos -= consumed;
+		if (start >= 0) start -= consumed;
+	}
+	if (buf.length > 64 * 1024 * 1024) {
+		throw new Error(`scanner stalled: ${buf.length} bytes without a complete object`);
+	}
 }
 
 await flush();

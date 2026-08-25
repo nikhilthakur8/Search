@@ -1,34 +1,34 @@
-import User from "@/models/leetcodeData";
-import connectDB from "@/utils/db";
-type User = {
-	_id: string;
-	username: string;
-	realName: string;
-	userAvatar: string;
-	ranking: number;
-	countryName?: string;
-};
+import { searchIndex, type LeetcodeUserDoc } from "@/utils/meili";
+
+type User = Pick<
+	LeetcodeUserDoc,
+	"username" | "realName" | "userAvatar" | "ranking" | "countryName"
+>;
+
 async function handleGetRankingPage(pageNo: number) {
 	const page = pageNo || 1;
 	const limit = 25;
-	const skip = (page - 1) * limit;
+
 	try {
-		await connectDB();
+		const index = searchIndex();
+		const { hits, totalHits } = await index.search("", {
+			filter: "hasRanking = true",
+			sort: ["ranking:asc"],
+			attributesToRetrieve: [
+				"username",
+				"realName",
+				"userAvatar",
+				"ranking",
+				"countryName",
+			],
+			hitsPerPage: limit,
+			page,
+		});
 
-		const totalUsers = await User.estimatedDocumentCount();
-		const users = await User.find({
-			ranking: {
-				$exists: true,
-			},
-		})
-			.sort({ ranking: 1 })
-			.select("username realName userAvatar ranking countryName")
-			.skip(skip)
-			.limit(limit);
-
-		const totalPages = Math.ceil(totalUsers / limit);
-
-		return { users, totalPages };
+		return {
+			users: hits as User[],
+			totalPages: Math.ceil((totalHits ?? 0) / limit),
+		};
 	} catch (error) {
 		console.error("Error fetching ranking page:", error);
 	}

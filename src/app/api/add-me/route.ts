@@ -1,75 +1,24 @@
-import User from "@/models/leetcodeData";
-import connectDB from "@/utils/db";
-import axios from "axios";
+import { fetchLeetcodeProfile, upsertIndexedUser } from "@/lib/leetcodeProfile";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
 	try {
-		await connectDB();
-
 		const { username } = await request.json();
 		const trimmedUsername = username.trim();
 
-		const query = `
-    query userPublicProfile($username: String!) {
-  matchedUser(username: $username) {
-    username
-    githubUrl
-    twitterUrl
-    linkedinUrl
-    profile {
-      ranking
-      userAvatar
-      realName
-      aboutMe
-      school
-      websites
-      countryName
-      company
-      jobTitle
-    }
-  }
-}
-    `;
-		const variables = { username: trimmedUsername };
-		const response = await axios.post("https://leetcode.com/graphql/", {
-			query,
-			variables,
-		});
-		if (!response.data.data.matchedUser) {
+		const profile = await fetchLeetcodeProfile(trimmedUsername);
+		if (!profile) {
 			return NextResponse.json(
 				{ error: "User not found" },
 				{ status: 404 }
 			);
 		}
-		const data = {
-			username: response.data.data.matchedUser.username,
-			githubUrl: response.data.data.matchedUser.githubUrl,
-			twitterUrl: response.data.data.matchedUser.twitterUrl,
-			linkedinUrl: response.data.data.matchedUser.linkedinUrl,
-			...response.data.data.matchedUser.profile,
-		};
 
-		await User.findOneAndUpdate(
-			{ username: trimmedUsername },
-			{ $set: data },
-			{
-				new: true,
-				upsert: true,
-				collation: {
-					locale: "en",
-					strength: 2,
-				},
-			}
-		);
+		await upsertIndexedUser(profile);
+
 		return NextResponse.json(
-			{
-				message: "User Profile Added Successfully",
-				profile: data,
-			},
-			{
-				status: 200,
-			}
+			{ message: "User Profile Added Successfully", profile },
+			{ status: 200 }
 		);
 	} catch (error) {
 		console.error("Error fetching profile data:", error);

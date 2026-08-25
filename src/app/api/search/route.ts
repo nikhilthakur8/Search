@@ -1,91 +1,20 @@
-import User from "@/models/leetcodeData";
-import connectDB from "@/utils/db";
-import { PipelineStage } from "mongoose";
+import {
+	LEETCODE_INDEX,
+	meiliSearchClient,
+	type LeetcodeUserDoc,
+} from "@/utils/meili";
 import { NextRequest, NextResponse } from "next/server";
 
-function getSearchStage(query: string) {
-	const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	const fields = ["username", "realName"];
-	const compactQuery = query.replace(/\s+/g, "");
+const SEARCH_FIELDS = ["username", "realName"];
 
-	return {
-		index: "default",
-		compound: {
-			should: [
-				{
-					text: {
-						query,
-						path: fields,
-						score: { boost: { value: 10 } },
-					},
-				},
-				{
-					text: {
-						query: compactQuery,
-						path: fields,
-						score: { boost: { value: 9 } },
-					},
-				},
-				{
-					phrase: {
-						query,
-						path: fields,
-						score: { boost: { value: 8 } },
-					},
-				},
-				{
-					wildcard: {
-						query: `${query}*`,
-						path: fields,
-						score: { boost: { value: 7 } },
-						allowAnalyzedField: true,
-					},
-				},
-
-				// {
-				// 	wildcard: {
-				// 		query: `*${query}`,
-				// 		path: fields,
-				// 		score: { boost: { value: 6 } },
-				// 		allowAnalyzedField: true,
-				// 	},
-				// },
-				// {
-				// 	wildcard: {
-				// 		query: `*${query}*`,
-				// 		path: fields,
-				// 		score: { boost: { value: 5 } },
-				// 		allowAnalyzedField: true,
-				// 	},
-				// },
-				// {
-				// 	regex: {
-				// 		query: `.*${escapedQuery}.*`,
-				// 		path: fields,
-				// 		score: { boost: { value: 4 } },
-				// 		allowAnalyzedField: true,
-				// 	},
-				// },
-				{
-					text: {
-						query,
-						path: fields,
-						fuzzy: { maxEdits: 1, prefixLength: 1 },
-						score: { boost: { value: 5 } },
-					},
-				},
-			],
-			minimumShouldMatch: 1,
-		},
-	};
-}
+type Hit = LeetcodeUserDoc & { _formatted?: Record<string, string> };
 
 export async function GET(request: NextRequest) {
 	const { searchParams } = new URL(request.url);
 	const query = searchParams.get("q") || "";
 	const page = parseInt(searchParams.get("page") || "1", 10);
 	const limit = parseInt(searchParams.get("limit") || "10", 10);
-	const skip = (page - 1) * limit;
+	const offset = (page - 1) * limit;
 
 	if (!query) {
 		return NextResponse.json(
@@ -95,45 +24,51 @@ export async function GET(request: NextRequest) {
 	}
 
 	try {
-		await connectDB();
+		// "nikhil thakur" should also match the username "nikhilthakur"
+		const compactQuery = query.replace(/\s+/g, "");
+		const queries = [query, ...(compactQuery !== query ? [compactQuery] : [])];
 
-		const pipeline: PipelineStage[] = [
-			{ $search: getSearchStage(query) },
-			{
-				$addFields: {
-					score: { $meta: "searchScore" },
-					highlights: { $meta: "searchHighlights" },
-				},
-			},
-			{
-				$facet: {
-					results: [
-						{ $sort: { score: -1 } },
-						{ $skip: skip },
-						{ $limit: limit },
-						{
-							$project: {
-								username: 1,
-								realName: 1,
-								userAvatar: 1,
-								highlights: 1,
-							},
-						},
-					],
-					totalCount: [{ $count: "total" }],
-				},
-			},
-		];
+		const { hits, estimatedTotalHits } = await meiliSearchClient.multiSearch({
+			federation: { limit, offset },
+			queries: queries.map((q) => ({
+				indexUid: LEETCODE_INDEX,
+				q,
+				attributesToSearchOn: SEARCH_FIELDS,
+				attributesToRetrieve: [
+					"username",
+					"realName",
+					"userAvatar",
+					"ranking",
+					"countryName",
+				],
+				attributesToHighlight: SEARCH_FIELDS,
+				highlightPreTag: "<mark>",
+				highlightPostTag: "</mark>",
+			})),
+		});
 
-		const aggResult = await User.aggregate(pipeline);
-		const resultsData = aggResult[0]?.results || [];
-		const totalCount = aggResult[0]?.totalCount[0]?.total || 0;
-		const hasMore = skip + resultsData.length < totalCount;
+		const users = (hits as Hit[]).map((hit) => ({
+			username: hit.username,
+			realName: hit.realName,
+			userAvatar: hit.userAvatar,
+			ranking: hit.ranking,
+			countryName: hit.countryName,
+			highlights: SEARCH_FIELDS.filter((f) => hit._formatted?.[f]).map(
+				(path) => ({ path, texts: [{ value: hit._formatted![path] }] })
+			),
+		}));
+
+		const total = estimatedTotalHits ?? users.length;
 
 		return NextResponse.json(
 			{
-				users: resultsData,
-				pagination: { page, limit, total: totalCount, hasMore },
+				users,
+				pagination: {
+					page,
+					limit,
+					total,
+					hasMore: offset + users.length < total,
+				},
 			},
 			{ status: 200 }
 		);

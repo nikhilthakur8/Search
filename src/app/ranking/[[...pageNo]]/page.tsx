@@ -20,11 +20,10 @@ import {
 import Image from "next/image";
 
 type User = {
-	_id: string;
 	username: string;
-	realName: string;
-	userAvatar: string;
-	ranking: number;
+	realName?: string;
+	userAvatar?: string;
+	ranking?: number;
 	countryName?: string;
 };
 
@@ -66,7 +65,7 @@ export default async function Page({ params }: PageProps) {
 				<TableBody>
 					{users.map((user: User) => (
 						<TableRow
-							key={user._id}
+							key={user.username}
 							className="hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer transition-colors"
 						>
 							<TableCell className="pl-4 text-sm md:text-base font-medium text-neutral-900 dark:text-neutral-100">

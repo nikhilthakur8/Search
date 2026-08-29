@@ -7,14 +7,16 @@ type User = Pick<
 
 const LIMIT = 25;
 
+// Meilisearch's sorted iteration stops being exact past ~300k documents deep on
+// this index - verified correct at offset 300k, scrambled by 400k. Cap well
+// inside that so every page we serve is genuinely in rank order.
+const MAX_PAGES = 10_000;
+
 async function handleGetRankingPage(pageNo: number) {
-	const page = pageNo || 1;
+	const page = Math.min(Math.max(pageNo || 1, 1), MAX_PAGES);
 
 	try {
 		const index = searchIndex();
-
-		// limit/offset skips the exact-count pass that hitsPerPage/page forces,
-		// which is what made deep pages expensive. Total comes from index stats.
 		const [{ hits }, { numberOfDocuments }] = await Promise.all([
 			index.search("", {
 				filter: "hasRanking = true",
@@ -34,7 +36,10 @@ async function handleGetRankingPage(pageNo: number) {
 
 		return {
 			users: hits as User[],
-			totalPages: Math.ceil(numberOfDocuments / LIMIT),
+			totalPages: Math.min(
+				Math.ceil(numberOfDocuments / LIMIT),
+				MAX_PAGES
+			),
 		};
 	} catch (error) {
 		console.error("Error fetching ranking page:", error);

@@ -15,10 +15,12 @@ const {
 	BATCH_SIZE = "5000",
 	INDEX_UID = "leetcode_users",
 	DRY_RUN,
+	SKIP_DOCS = "0",
 } = process.env;
 
 const file = process.argv[2];
 const dryRun = DRY_RUN === "1";
+const skipDocs = parseInt(SKIP_DOCS, 10) || 0;
 
 if (!file || (!MEILI_WRITE_KEY && !dryRun)) {
 	console.error("usage: MEILI_WRITE_KEY=... node index-json-to-meili.mjs <file.json>");
@@ -79,9 +81,28 @@ let skipped = 0;
 let bytes = 0;
 let lastTask = null;
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// A stale tunnel or a busy server must not kill a multi-hour import.
+const withRetry = async (label, fn) => {
+	for (let attempt = 1; ; attempt++) {
+		try {
+			return await fn();
+		} catch (err) {
+			if (attempt >= 30) throw err;
+			const wait = Math.min(30000, 1000 * 2 ** Math.min(attempt, 5));
+			process.stdout.write(`\n${label} failed (attempt ${attempt}): ${err?.message ?? err}; retrying in ${wait / 1000}s\n`);
+			await sleep(wait);
+		}
+	}
+};
+
 const throttle = async () => {
-	while ((await meili.tasks.getTasks({ statuses: ["enqueued"] })).results.length > 10) {
-		await new Promise((r) => setTimeout(r, 500));
+	while (
+		(await withRetry("getTasks", () => meili.tasks.getTasks({ statuses: ["enqueued"] })))
+			.results.length > 10
+	) {
+		await sleep(500);
 	}
 };
 
@@ -94,7 +115,8 @@ const flush = async () => {
 		return;
 	}
 	await throttle();
-	lastTask = await index.addDocuments(batch, { primaryKey: "id" });
+	const payload = batch;
+	lastTask = await withRetry("addDocuments", () => index.addDocuments(payload, { primaryKey: "id" }));
 	sent += batch.length;
 	batch = [];
 	const pct = ((bytes / total) * 100).toFixed(1);
@@ -138,8 +160,11 @@ for await (const chunk of stream) {
 		try {
 			const doc = JSON.parse(raw);
 			parsed++;
-			if (doc.username) batch.push(toDocument(doc));
-			else skipped++;
+			// resume: everything before this offset is already in the index
+			if (parsed > skipDocs) {
+				if (doc.username) batch.push(toDocument(doc));
+				else skipped++;
+			}
 		} catch {
 			skipped++;
 		}
